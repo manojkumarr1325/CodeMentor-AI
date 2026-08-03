@@ -1,0 +1,61 @@
+/* ==========================================
+   Shared Buttons
+========================================== */
+
+.btn{
+
+    border:none;
+
+    border-radius:12px;
+
+    padding:12px 20px;
+
+    cursor:pointer;
+
+    font-weight:600;
+
+    transition:.25s;
+
+}
+
+.btn-primary{
+
+    background:var(--primary);
+
+    color:white;
+
+}
+
+.btn-primary:hover{
+
+    transform:translateY(-2px);
+
+}
+
+.theme-btn{
+
+    width:45px;
+
+    height:45px;
+
+    border-radius:50%;
+
+    border:1px solid var(--border);
+
+    background:var(--surface);
+
+    color:var(--text);
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.theme-btn:hover{
+
+    background:var(--primary);
+
+    color:white;
+
+}

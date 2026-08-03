@@ -1,0 +1,34 @@
+import express from "express";
+import { algorithmService } from "../services/algorithmService.js";
+
+const router = express.Router();
+
+router.post("/", async (req, res) => {
+
+    console.log("✅ Algorithm route hit");
+    console.log(req.body);
+
+    try {
+
+        const { question, messages } = req.body;
+
+        const answer = await algorithmService(
+            question,
+            messages || []
+        );
+
+        res.json({ answer });
+
+    } catch (err) {
+
+        console.error(err);
+
+        res.status(500).json({
+            answer: "Internal Server Error"
+        });
+
+    }
+
+});
+
+export default router;

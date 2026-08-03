@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Login | CodeMentor AI</title>
+
+    <!-- Base -->
+    <link rel="stylesheet" href="css/base/variables.css">
+    <link rel="stylesheet" href="css/base/theme.css">
+
+    <!-- Components -->
+    <link rel="stylesheet" href="css/components/buttons.css">
+
+    <!-- Authentication -->
+    <link rel="stylesheet" href="css/pages/auth.css">
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github-dark.min.css">
+
+    <script>
+        if(localStorage.getItem("theme")==="dark"){
+            document.documentElement.classList.add("dark");
+        }
+    </script>
+
+</head>
+
+<body>
+
+<div class="auth-container">
+
+    <!-- ================= LEFT PANEL ================= -->
+
+    <div class="auth-left">
+
+        <div class="brand">
+
+            <h1>CodeMentor AI</h1>
+
+            <p>
+                Your AI-Powered Competitive Programming Assistant
+            </p>
+
+        </div>
+
+        <div class="features">
+
+            <div class="feature">
+                <div class="feature-icon">🧩</div>
+                <div>
+                    <h3>Problem Solver</h3>
+                    <p>Solve coding problems with detailed AI explanations.</p>
+                </div>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">🐞</div>
+                <div>
+                    <h3>AI Debugger</h3>
+                    <p>Detect logical, runtime and syntax errors instantly.</p>
+                </div>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">📚</div>
+                <div>
+                    <h3>Algorithm Tutor</h3>
+                    <p>Learn Data Structures & Algorithms interactively.</p>
+                </div>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">📈</div>
+                <div>
+                    <h3>Complexity Analyzer</h3>
+                    <p>Analyze time and space complexity with one click.</p>
+                </div>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">🧪</div>
+                <div>
+                    <h3>Test Case Generator</h3>
+                    <p>Generate normal, edge and stress test cases instantly.</p>
+                </div>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">🕘</div>
+                <div>
+                    <h3>Smart History</h3>
+                    <p>Access all your previous coding sessions anytime.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="mission-box">
+
+            <h3>Our Mission</h3>
+
+            <p>
+                CodeMentor AI helps programmers learn faster,
+                solve smarter, and grow through understanding—
+                not memorization.
+            </p>
+
+            <p>
+                Whether you're preparing for coding interviews,
+                competitive programming, or your semester exams,
+                we're here to guide every step of your journey.
+            </p>
+
+            <div class="mission-divider"></div>
+
+            <h3>What You'll Master</h3>
+
+            <ul class="mission-list">
+                <li>✓ Data Structures & Algorithms (DSA)</li>
+                <li>✓ Design & Analysis of Algorithms (DAA)</li>
+                <li>✓ Competitive Programming</li>
+                <li>✓ Coding Interview Preparation</li>
+                <li>✓ Clean & Optimized Coding</li>
+                <li>✓ AI-Assisted Problem Solving</li>
+            </ul>
+
+            <p class="mission-footer">
+                "Your next <span>Accepted</span> solution starts here."
+            </p>
+
+        </div>
+
+        <div class="quote">
+            ❝ Practice. Debug. Learn. Improve. ❞
+        </div>
+
+    </div>
+
+    <!-- ================= RIGHT PANEL ================= -->
+
+    <div class="auth-right">
+
+        <!--<button
+            id="themeToggle"
+            class="theme-btn">
+            🌙
+        </button>-->
+
+        <div class="auth-card">
+
+            <!--<div class="auth-logo">
+
+                💻
+
+            </div>-->
+
+            <h1>
+
+                Welcome Back
+
+            </h1>
+
+            <p class="subtitle">
+
+                Continue your AI-powered coding journey.
+
+            </p>
+
+            <form id="loginForm">
+
+                <div class="input-group">
+
+                    <label>Email</label>
+
+                    <input
+                        id="email"
+                        type="email"
+                        placeholder="Enter your email"
+                        required>
+
+                </div>
+
+                <div class="input-group">
+
+                    <label>Password</label>
+
+                    <input
+                        id="password"
+                        type="password"
+                        placeholder="Enter your password"
+                        required>
+
+                </div>
+
+                <div class="auth-options">
+
+                    <label class="remember">
+
+                        <input type="checkbox">
+
+                        Remember Me
+
+                    </label>
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="auth-btn">
+
+                    Login
+
+                </button>
+
+            </form>
+
+            <p class="bottom-text">
+
+                Don't have an account?
+
+                <a href="signup.html">
+
+                    Sign Up
+
+                </a>
+
+            </p>
+
+        </div>
+
+    <div class="code-window">
+
+        <div class="window-header">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+
+            <span class="filename">developer.cpp</span>
+        </div>
+
+        <div class="code-body">
+    <pre><code class="language-cpp">while (alive) {
+        learn();
+        practice();
+        debug();
+        optimize();
+        compete();
+
+        if (fail) {
+            learn();
+            continue;
+        }
+
+        if (success) {
+            helpOthers();
+        }
+    }</code></pre>
+        </div>
+
+    </div>
+
+</div>
+
+<script type="module" src="js/utils/theme.js"></script>
+
+<script type="module" src="js/auth.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
+
+<script>
+    hljs.highlightAll();
+</script>
+
+</body>
+
+</html>

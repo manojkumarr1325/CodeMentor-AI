@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+.env.*
+
+# Temporary files
+temp/
+tmp/
+
+# Logs
+*.log
+
+# Test files
+test.js
+testModels.js
+testmongo.js
+
+# Editor files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+backend/database/users.json

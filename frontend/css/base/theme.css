@@ -1,0 +1,134 @@
+body,
+nav,
+section,
+div,
+button,
+a,
+input,
+textarea,
+select,
+.card,
+.feature-card,
+.glass-card,
+.ai-preview,
+.stat{
+
+    transition:
+        background .35s ease,
+        color .35s ease,
+        border-color .35s ease,
+        box-shadow .35s ease;
+
+}
+
+
+/* ============================
+   Global Theme
+============================ */
+
+body{
+
+    background:var(--bg);
+
+    color:var(--text);
+
+    transition:
+        background .35s,
+        color .35s;
+
+}
+
+
+/* ============================
+   Navbar
+============================ */
+
+.navbar{
+
+    background:var(--surface);
+
+    border-bottom:1px solid var(--border);
+
+}
+
+
+/* ============================
+   Cards / AI Containers
+============================ */
+
+.card,
+.history-card,
+.ai-message{
+
+    background:var(--surface);
+
+    color:var(--text);
+
+    border:1px solid var(--border);
+
+}
+
+
+/* ============================
+   Inputs
+============================ */
+
+input,
+textarea,
+select{
+
+    background:var(--surface);
+
+    color:var(--text);
+
+    border:1px solid var(--border);
+
+}
+
+
+/* ============================
+   Footer
+============================ */
+
+footer{
+
+    color:var(--text-secondary);
+
+}
+
+
+/* ============================
+   Theme Button
+============================ */
+
+.theme-btn{
+
+    background:var(--surface);
+
+    border:1px solid var(--border);
+
+    color:var(--text);
+
+    padding:10px 14px;
+
+    border-radius:12px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+
+.theme-btn:hover{
+
+    transform:translateY(-2px);
+
+    background:var(--primary);
+
+    color:#000;
+
+    box-shadow:
+        0 0 15px rgba(34,197,94,.45);
+
+}

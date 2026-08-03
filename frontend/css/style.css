@@ -1,0 +1,168 @@
+/* ===========================
+   GOOGLE FONT
+=========================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+
+    --bg:#09090B;
+    --card:#18181B;
+    --card-hover:#232326;
+
+    --primary:#22c55e;
+    --primary-hover:#22c55e;
+
+    --secondary:#8B5CF6;
+
+    --text:#FAFAFA;
+    --text-secondary:#A1A1AA;
+
+    --border:#2A2A2D;
+
+    --shadow:0 10px 35px rgba(0,0,0,.35);
+
+    --radius:18px;
+
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+
+    font-family:'Inter',sans-serif;
+
+    background:var(--bg);
+
+    color:var(--text);
+
+    overflow-x:hidden;
+
+}
+
+/* ===========================
+      Background
+=========================== */
+
+.background-blur{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:-1;
+
+    background:
+
+    radial-gradient(circle at top left,
+    rgba(59,130,246,.18),
+    transparent 35%),
+
+    radial-gradient(circle at top right,
+    rgba(139,92,246,.15),
+    transparent 30%),
+
+    radial-gradient(circle at bottom,
+    rgba(255,255,255,.03),
+    transparent 35%);
+
+}
+
+/* ===========================
+        Scrollbar
+=========================== */
+
+::-webkit-scrollbar{
+
+    width:10px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:#111;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:#333;
+
+    border-radius:20px;
+
+}
+
+::-webkit-scrollbar-thumb:hover{
+
+    background:#555;
+
+}
+
+/* ===========================
+        Buttons
+=========================== */
+
+button{
+
+    cursor:pointer;
+
+    border:none;
+
+    outline:none;
+
+    transition:.3s;
+
+    font-family:'Inter',sans-serif;
+
+}
+
+button:hover{
+
+    transform:translateY(-2px);
+
+}
+
+/* ===========================
+        Inputs
+=========================== */
+
+textarea,
+select{
+
+    font-family:'Inter',sans-serif;
+
+    outline:none;
+
+    border:none;
+
+}
+
+/* ===========================
+        Links
+=========================== */
+
+a{
+
+    color:inherit;
+
+    text-decoration:none;
+
+}
+
+/* ===========================
+        Utilities
+=========================== */
+
+.container{
+
+    width:min(1200px,92%);
+
+    margin:auto;
+
+}

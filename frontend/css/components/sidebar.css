@@ -1,0 +1,293 @@
+/* ==========================================
+   SIDEBAR
+========================================== */
+
+.sidebar{
+
+    width:100%;
+
+    min-width:0;
+
+    height:100%;
+
+    display:flex;
+
+    flex-direction:column;
+
+    background:var(--surface);
+
+    border-right:1px solid var(--border);
+
+    overflow:hidden;
+
+    transition:
+        opacity .35s ease,
+        transform .35s ease;
+
+}
+
+/* Collapse */
+
+.sidebar.collapsed{
+
+    opacity:0;
+
+    overflow:hidden;
+
+    pointer-events:none;
+
+}
+
+/* ==========================================
+   NEW CHAT
+========================================== */
+
+.new-chat-btn{
+
+    margin:20px;
+
+    padding:14px;
+
+    border:none;
+
+    border-radius:16px;
+
+    background:#22c55e;
+
+    color:white;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.new-chat-btn:hover{
+
+    background:#22c55e;
+
+    transform:translateY(-2px);
+
+}
+
+/* ==========================================
+   TITLE
+========================================== */
+
+.sidebar-title{
+
+    padding:0 20px 15px;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    text-transform:uppercase;
+
+    letter-spacing:1px;
+
+    color:var(--text-secondary);
+
+}
+
+/* ==========================================
+   HISTORY LIST
+========================================== */
+
+.history-list{
+
+    flex:1;
+
+    overflow-y:auto;
+
+    padding:0 12px 20px;
+
+}
+
+/* ==========================================
+   HISTORY ITEM
+========================================== */
+
+.history-item{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:14px;
+
+    margin-bottom:10px;
+
+    border-radius:14px;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.history-item:hover{
+
+    background:rgba(37,99,235,.08);
+
+}
+
+.history-item.active{
+
+    background:rgba(37,99,235,.15);
+
+    border-left:4px solid #22c55e;
+
+}
+
+/* ==========================================
+   CONTENT
+========================================== */
+
+.history-content{
+
+    flex:1;
+
+    overflow:hidden;
+
+}
+
+.history-title{
+
+    font-size:14px;
+
+    font-weight:600;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+}
+
+.history-language{
+
+    margin-top:4px;
+
+    font-size:12px;
+
+    color:#22c55e;
+
+}
+
+/* ==========================================
+   DELETE
+========================================== */
+
+.history-actions{
+
+    display:flex;
+
+    align-items:center;
+
+}
+
+.history-delete{
+
+    width:34px;
+
+    height:34px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:transparent;
+
+    cursor:pointer;
+
+    opacity:0;
+
+    transition:.25s;
+
+}
+
+.history-item:hover .history-delete{
+
+    opacity:1;
+
+}
+
+.history-delete:hover{
+
+    background:#ef4444;
+
+    color:white;
+
+}
+
+/* ==========================================
+   EMPTY
+========================================== */
+
+.history-empty{
+
+    text-align:center;
+
+    margin-top:40px;
+
+    color:var(--text-secondary);
+
+}
+
+/* ==========================================
+   SCROLLBAR
+========================================== */
+
+.history-list::-webkit-scrollbar{
+
+    width:6px;
+
+}
+
+.history-list::-webkit-scrollbar-thumb{
+
+    background:#b8b8b8;
+
+    border-radius:20px;
+
+}
+
+/* ==========================================
+   DARK
+========================================== */
+
+body.dark .sidebar{
+
+    background:#050505;
+
+    border-right:1px solid #374151;
+
+}
+
+body.dark .history-item:hover{
+
+    background:#1f2937;
+
+}
+
+body.dark .history-item.active{
+
+    background:#1e3a8a55;
+
+}
+
+body.dark .history-delete:hover{
+
+    background:#dc2626;
+
+}

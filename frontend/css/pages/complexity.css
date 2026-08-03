@@ -1,0 +1,320 @@
+/* ==========================================
+   CodeMentor AI - Problem Solver
+========================================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    font-family:'Inter',sans-serif;
+
+    background:var(--bg);
+
+    color:var(--text);
+
+    height:100vh;
+
+    overflow:hidden;
+
+    transition:
+        background .35s,
+        color .35s;
+
+}
+
+
+
+
+/* ==========================================
+   CHAT AREA
+========================================== */
+
+.chat-layout{
+
+    height:calc(100vh - 170px);
+
+    overflow-y:auto;
+
+    padding:40px 15% 120px;
+
+}
+
+.welcome{
+
+    text-align:center;
+
+    margin:80px 0;
+
+}
+
+.welcome h1{
+
+    font-size:46px;
+
+    margin-bottom:15px;
+
+}
+
+.welcome p{
+
+    color:var(--text-secondary);
+
+    font-size:18px;
+
+}
+
+/* ==========================================
+   INPUT BAR
+========================================== */
+
+.input-bar{
+
+    position:fixed;
+
+    bottom:0;
+
+    left:0;
+
+    width:100%;
+
+    padding:18px 25px;
+
+    background:var(--surface);
+
+    border-top:1px solid var(--border);
+
+    display:flex;
+
+    gap:15px;
+
+    align-items:flex-end;
+
+    transition:.35s;
+
+}
+
+#language{
+
+    width:140px;
+
+    height:50px;
+
+    padding:10px;
+
+    font-size:15px;
+
+    border-radius:12px;
+
+    border:1px solid var(--border);
+
+    background:var(--surface);
+
+    color:var(--text);
+
+    outline:none;
+
+}
+
+#problemInput{
+
+    flex:1;
+
+    min-height:55px;
+
+    max-height:180px;
+
+    resize:none;
+
+    padding:15px;
+
+    font-size:16px;
+
+    border-radius:15px;
+
+    border:1px solid var(--border);
+
+    background:var(--surface);
+
+    color:var(--text);
+
+    outline:none;
+
+}
+
+#problemInput:focus{
+
+    border-color:var(--primary);
+
+}
+
+#solveBtn{
+
+    width:60px;
+
+    height:55px;
+
+    border:none;
+
+    border-radius:15px;
+
+    background:var(--primary);
+
+    color:white;
+
+    font-size:22px;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+#solveBtn:hover{
+
+    transform:translateY(-2px);
+
+}
+
+/* ==========================================
+   CODE BLOCKS
+========================================== */
+
+.code-container{
+
+    margin-top:20px;
+
+    overflow:hidden;
+
+    border-radius:15px;
+
+    border:1px solid var(--border);
+
+}
+
+.code-header{
+
+    background:#1f2937;
+
+    color:white;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:10px 16px;
+
+}
+
+.copy-btn{
+
+    border:none;
+
+    border-radius:8px;
+
+    padding:6px 12px;
+
+    background:var(--primary);
+
+    color:white;
+
+    cursor:pointer;
+
+}
+
+pre{
+
+    margin:0;
+
+    padding:18px;
+
+    overflow-x:auto;
+
+    white-space:pre;
+
+    line-height:1.6;
+
+    background:rgba(15,23,42,.08);
+
+    color:var(--text);
+
+}
+
+code{
+
+    font-family:Consolas,monospace;
+
+    white-space:pre;
+
+}
+
+body.dark pre{
+
+    background:#0f172a;
+
+}
+
+body.dark code{
+
+    color:#f8fafc;
+
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media(max-width:900px){
+
+    .chat-layout{
+
+        padding:20px 20px 120px;
+
+    }
+
+    .input-bar{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+    }
+
+    #language{
+
+        width:100%;
+
+    }
+
+    #solveBtn{
+
+        width:100%;
+
+    }
+
+}
+
+/* ==========================================
+   SMOOTH THEME TRANSITIONS
+========================================== */
+
+body,
+.navbar,
+.ai-message,
+.input-bar,
+#problemInput,
+#language,
+.user-message{
+
+    transition:
+        background .35s,
+        color .35s,
+        border-color .35s,
+        box-shadow .35s;
+
+}

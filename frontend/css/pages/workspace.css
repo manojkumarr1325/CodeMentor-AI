@@ -1,0 +1,345 @@
+/* ==========================================
+   CodeMentor AI - Workspace
+========================================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Inter',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    height:100vh;
+    overflow:hidden;
+}
+
+/* ==========================
+   Main Layout
+========================== */
+
+.workspace{
+    display:grid;
+    grid-template-columns:280px minmax(0,1fr);
+    height:calc(100vh - 80px);
+    overflow:hidden;
+    transition:grid-template-columns .35s ease;
+}
+
+.workspace.sidebar-hidden,
+.workspace.sidebar-collapsed{
+    grid-template-columns:0 minmax(0,1fr);
+}
+
+/* ==========================
+   Bottom Input
+========================== */
+
+.input-bar{
+    flex-shrink:0;
+    padding:22px;
+    background:var(--bg);
+    border-top:1px solid var(--border);
+    z-index:50;
+}
+
+/* ==========================
+   Input Card
+========================== */
+
+.input-wrapper{
+    width:min(1000px,95%);
+    margin:auto;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:24px;
+    overflow:hidden;
+    transition:.25s;
+    box-shadow:0 12px 30px rgba(0,0,0,.08);
+}
+
+.input-wrapper:focus-within{
+    border-color:#22c55e;
+    box-shadow:
+        0 0 0 4px rgba(11, 232, 29, 0.15),
+        0 18px 45px rgba(13, 235, 5, 0.12);
+}
+
+/* ==========================
+   Monaco Editor
+========================== */
+
+#problemInput,
+.editor-container{
+    width:100%;
+    height:70px;
+}
+
+.monaco-editor,
+.monaco-editor-background,
+.monaco-editor .margin{
+    background:transparent;
+}
+
+.monaco-editor .margin{
+    width:0 !important;
+}
+
+.monaco-editor .line-numbers,
+.monaco-editor .glyph-margin{
+    display:none !important;
+}
+
+.monaco-editor .current-line{
+    border:12px;
+}
+
+.monaco-editor .scroll-decoration,
+.monaco-editor .view-overlays{
+    background:transparent !important;
+}
+
+.monaco-editor .cursor{
+    border-left-width:2px !important;
+}
+
+/* ==========================
+   Input Footer
+========================== */
+
+.input-footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px 18px;
+    border-top:1px solid var(--border);
+}
+
+#language{
+    appearance:none;
+    -webkit-appearance:none;
+    padding:10px 38px 10px 16px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    background:var(--bg);
+    color:var(--text);
+    font-size:14px;
+    font-weight:500;
+    cursor:pointer;
+    transition:.25s;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%23666' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:right 12px center;
+}
+
+#language:hover{
+    border-color:#22c55e;
+}
+
+#language:focus{
+    outline:none;
+    border-color:#22c55e;
+    box-shadow:0 0 0 4px rgba(59,130,246,.12);
+}
+
+/* ==========================
+   Send Button
+========================== */
+
+#solveBtn{
+    width:52px;
+    height:52px;
+    border:none;
+    border-radius:50%;
+    background:#22c55e;
+    color:white;
+    font-size:24px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:.25s;
+}
+
+#solveBtn:hover{
+    transform:scale(1.08);
+    background:#22c55e;
+}
+
+/* ==========================
+   Responsive
+========================== */
+
+@media (max-width:900px){
+
+    .workspace{
+        grid-template-columns:1fr;
+    }
+
+    .input-wrapper{
+        width:100%;
+    }
+
+    #problemInput,
+    .editor-container{
+        height:100px;
+    }
+
+    .input-footer{
+        padding:12px 16px;
+    }
+
+    #language{
+        font-size:13px;
+        padding:8px 34px 8px 14px;
+    }
+
+    #solveBtn{
+        width:44px;
+        height:44px;
+        font-size:20px;
+    }
+
+}
+
+/* ==========================================
+   Debugger Page Layout
+========================================== */
+
+/* Chat fills remaining height */
+
+.debugger-workspace .chat-section{
+
+    display:flex;
+
+    flex-direction:column;
+
+    flex:1;
+
+    min-height:0;
+
+    min-width:0;
+
+    overflow:hidden;
+
+}
+
+/* Scrollable chat */
+
+.debugger-workspace .chat-layout{
+
+    flex:1;
+
+    overflow-y:auto;
+
+    overflow-x:hidden;
+
+    min-height:0;
+
+    padding:40px 8%;
+
+    padding-bottom:180px;
+
+    scroll-behavior:smooth;
+
+}
+
+/* Bottom input */
+
+.debugger-workspace .input-bar{
+
+    flex-shrink:0;
+
+    padding:22px;
+
+    background:var(--bg);
+
+    border-top:1px solid var(--border);
+
+    z-index:100;
+
+}
+
+/* Editor */
+
+.debugger-workspace .editor-container{
+
+    width:100%;
+
+    height:180px;
+
+}
+
+/* Monaco */
+
+.debugger-workspace .monaco-editor,
+
+.debugger-workspace .monaco-editor .overflow-guard{
+
+    width:100% !important;
+
+    height:100% !important;
+
+}
+
+/* ==========================================
+   Testcase Generator Layout
+========================================== */
+
+.testcase-workspace{
+    display:flex !important;
+    flex-direction:column;
+    height:calc(100vh - 80px);
+    overflow:hidden;
+}
+
+.testcase-workspace .chat-section{
+    display:flex;
+    flex-direction:column;
+    flex:1;
+    min-height:0;
+    min-width:0;
+    overflow:hidden;
+}
+
+.testcase-workspace .chat-layout{
+    flex:1;
+    overflow-y:auto;
+    overflow-x:hidden;
+    min-height:0;
+    padding:40px 8%;
+    padding-bottom:180px;
+    scroll-behavior:smooth;
+}
+
+.testcase-workspace .input-bar{
+    flex-shrink:0;
+    padding:22px;
+    background:var(--bg);
+    border-top:1px solid var(--border);
+    z-index:100;
+}
+
+.testcase-workspace .editor-container{
+    width:100%;
+    height:180px;
+}
+
+.testcase-workspace .monaco-editor,
+.testcase-workspace .monaco-editor .overflow-guard{
+    width:100% !important;
+    height:100% !important;
+}
+
+/* Fix chat area shrinking inside grid */
+.workspace-main,
+.chat-section{
+    min-width:0;
+}
+
+.chat-layout{
+    width:100%;
+    box-sizing:border-box;
+}

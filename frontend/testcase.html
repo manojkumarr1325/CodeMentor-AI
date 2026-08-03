@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeMentor AI - Test Case Generator</title>
+
+    <!-- Base -->
+    <link rel="stylesheet" href="css/base/variables.css">
+    <link rel="stylesheet" href="css/base/theme.css">
+
+    <!-- Components -->
+    <link rel="stylesheet" href="css/components/navbar.css">
+    <link rel="stylesheet" href="css/components/buttons.css">
+    <link rel="stylesheet" href="css/components/chat.css">
+    <link rel="stylesheet" href="css/components/sidebar.css">
+
+    <!-- Workspace -->
+    <link rel="stylesheet" href="css/pages/workspace.css">
+
+    <!-- Highlight.js -->
+    <link
+        id="hl-light"
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css">
+
+    <link
+        id="hl-dark"
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css"
+        disabled>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        if (localStorage.getItem("theme") === "dark") {
+            document.documentElement.classList.add("dark");
+        }
+    </script>
+
+    <!-- Monaco -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.min.js"></script>
+
+</head>
+
+<body data-tool="testcase">
+
+<!-- ================= NAVBAR ================= -->
+
+<nav class="navbar">
+
+    <div class="logo">
+        CodeMentor AI
+    </div>
+
+    <div class="nav-links">
+
+        <button id="toggleSidebar" class="theme-btn">
+            ☰
+        </button>
+
+        <a href="dashboard.html">Dashboard</a>
+
+        <!--<a href="problem.html">Problem Solver</a>-->
+
+        <!--<a href="login.html">
+            Logout
+        </a>-->
+
+        <button id="themeToggle" class="theme-btn">
+            🌙
+        </button>
+
+    </div>
+    
+    <div class="user-menu">
+
+        <span id="username">
+            User
+        </span>
+
+    </div>
+
+</nav>
+
+<!-- ================= WORKSPACE ================= -->
+
+<main class="workspace">
+
+    <!-- Sidebar -->
+
+    <aside class="sidebar">
+
+        <button id="newChatBtn" class="new-chat-btn">
+            + New Chat
+        </button>
+
+        <div class="sidebar-title">
+            Recent Chats
+        </div>
+
+        <div id="historyList" class="history-list"></div>
+
+    </aside>
+
+    <!-- Chat -->
+
+    <section class="chat-section">
+
+        <div class="chat-layout">
+
+            <div id="welcomeScreen" class="welcome">
+
+                <h1>🧪 Test Case Generator</h1>
+
+                <p>
+                    Paste your programming problem statement and CodeMentor AI
+                    will generate sample, edge and corner test cases.
+                </p>
+
+            </div>
+
+            <div id="chatContainer"></div>
+
+        </div>
+
+        <!-- Input -->
+
+        <footer class="input-bar">
+
+            <div class="input-wrapper">
+
+                <div
+                    id="problemInput"
+                    class="editor-container">
+                </div>
+
+                <div class="input-footer">
+
+                    <select id="language">
+
+                        <option>C++</option>
+                        <option>C</option>
+                        <option>Java</option>
+                        <option>Python</option>
+                        <option>JavaScript</option>
+
+                    </select>
+
+                    <button id="solveBtn">
+                        ➜
+                    </button>
+
+                </div>
+
+            </div>
+
+        </footer>
+
+    </section>
+
+</main>
+
+<!-- Libraries -->
+
+<script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+
+<!-- Scripts -->
+
+<script type="module" src="js/pages/testcase.js"></script>
+
+<script type="module" src="js/pages/history.js"></script>
+
+<script type="module" src="js/components/sidebar.js"></script>
+
+<script type="module" src="js/utils/theme.js"></script>
+<script type="module" src="js/auth.js"></script>
+<script type="module" src="js/user.js"></script>
+</body>
+</html>

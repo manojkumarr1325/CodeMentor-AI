@@ -1,0 +1,19 @@
+.logo{
+
+    font-size:28px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.logo:hover{
+
+    transform:scale(1.05);
+
+    color:var(--primary);
+
+}

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>History | CodeMentor AI</title>
+
+<link rel="stylesheet" href="css/base/variables.css">
+<link rel="stylesheet" href="css/base/theme.css">
+<link rel="stylesheet" href="css/components/navbar.css">
+<link rel="stylesheet" href="css/components/buttons.css">
+<link rel="stylesheet" href="css/pages/history.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script>
+if(localStorage.getItem("theme")==="dark"){
+    document.documentElement.classList.add("dark");
+}
+</script>
+</head>
+
+<body>
+
+<nav class="navbar">
+
+<div class="logo">
+
+CodeMentor AI
+
+</div>
+
+<div class="nav-links">
+
+<a href="dashboard.html">Dashboard</a>
+
+<!--<a href="problem.html">Problem Solver</a>-->
+
+<!--<a href="history.html" class="active">History</a>-->
+
+<button id="themeToggle" class="theme-btn">
+🌙
+</button>
+
+<a href="#" onclick="logout(); return false;">Logout</a>
+
+</div>
+
+<div class="user-menu">
+
+    <span id="username">
+        User
+    </span>
+    
+</div>
+
+</nav>
+
+<main class="history-page">
+
+    <h1>Conversation History</h1>
+
+    <!-- Statistics -->
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+
+            <h2 id="totalCount">0</h2>
+
+            <p>Total</p>
+
+        </div>
+
+        <div class="stat-card">
+
+            <h2 id="problemCount">0</h2>
+
+            <p>Problem Solver</p>
+
+        </div>
+
+        <div class="stat-card">
+
+            <h2 id="debugCount">0</h2>
+
+            <p>Debugger</p>
+
+        </div>
+
+        <div class="stat-card">
+
+            <h2 id="complexityCount">0</h2>
+
+            <p>Complexity</p>
+
+        </div>
+
+        <div class="stat-card">
+
+            <h2 id="testcaseCount">0</h2>
+
+            <p>Test Cases</p>
+
+        </div>
+
+        <div class="stat-card">
+            <h2 id="algorithmCount">0</h2>
+            <p>Algorithm Tutor</p>
+        </div>
+
+    </div>
+
+    <!-- Search -->
+
+    <input
+
+        id="searchInput"
+
+        type="text"
+
+        placeholder="Search conversations..."
+
+    >
+
+    <!-- Filter -->
+
+    <div class="filter-bar">
+
+        <button class="filter-btn active" data-tool="all">
+            All
+        </button>
+
+        <button class="filter-btn" data-tool="problem">
+            📝 Problem
+        </button>
+
+        <button class="filter-btn" data-tool="debug">
+            🐞 Debug
+        </button>
+
+        <button class="filter-btn" data-tool="complexity">
+            📊 Complexity
+        </button>
+
+        <button class="filter-btn" data-tool="testcase">
+            🧪 Test Cases
+        </button>
+
+        <button
+        class="filter-btn"
+        data-tool="algorithm">
+
+        📚 Algorithm
+
+        </button>
+
+        <button id="clearBtn">
+
+        Clear History
+
+        </button>
+
+    </div>
+
+    <div id="historyContainer"></div>
+
+    
+
+</main>
+
+<script type="module" src="js/pages/historyPage.js"></script>
+<script type="module" src="js/utils/theme.js"></script>
+<script type="module" src="js/auth.js"></script>
+<script type="module" src="js/user.js"></script>
+</body>
+
+</html>

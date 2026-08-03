@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeMentor AI - Problem Solver</title>
+
+    <link rel="stylesheet" href="css/base/variables.css">
+    <link rel="stylesheet" href="css/base/theme.css">
+    <link rel="stylesheet" href="css/components/navbar.css">
+    <link rel="stylesheet" href="css/components/buttons.css">
+    <link rel="stylesheet" href="css/components/chat.css">
+    <link rel="stylesheet" href="css/components/sidebar.css">
+    <link rel="stylesheet" href="css/pages/workspace.css">
+    <link
+    id="hl-light"
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css">
+
+    <link
+    id="hl-dark"
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css"
+    disabled>
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        if(localStorage.getItem("theme")==="dark"){
+            document.documentElement.classList.add("dark");
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.min.js"></script>
+</head>
+
+<body data-tool="problem">
+
+    <!-- ================= NAVBAR ================= -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            CodeMentor AI
+        </div>
+
+        <div class="nav-links">
+
+            <button id="toggleSidebar" class="theme-btn">
+                ☰
+            </button>
+
+            <a href="dashboard.html" class="active">Dashboard</a>
+
+            <!--<a href="problem.html">Problem Solver</a>-->
+
+            <!--<a href="login.html">Logout</a>-->
+
+            <button id="themeToggle" class="theme-btn">
+                🌙
+            </button>
+
+        </div>
+
+        <div class="user-menu">
+
+            <span id="username">
+                User
+            </span>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="workspace">
+
+        <!-- ================= SIDEBAR ================= -->
+
+        <aside class="sidebar">
+
+            <button id="newChatBtn" class="new-chat-btn">
+                + New Chat
+            </button>
+
+            <div class="sidebar-title">
+                Recent Chats
+            </div>
+
+            <div id="historyList" class="history-list"></div>
+
+        </aside>
+
+        <!-- ================= CHAT SECTION ================= -->
+
+        <section class="chat-section">
+
+            <!-- Scrollable Chat -->
+
+            <div class="chat-layout">
+
+                <div id="welcomeScreen" class="welcome">
+
+                    <h1>👋 Welcome to CodeMentor AI</h1>
+
+                    <p>
+                        Ask any Competitive Programming question.
+                    </p>
+
+                </div>
+
+                <div id="chatContainer"></div>
+
+            </div>
+
+            
+            <!-- Input -->
+
+            <footer class="input-bar">
+
+                <div class="input-wrapper">
+
+                    <div id="problemInput" class="editor-container"></div>
+
+                    <div class="input-footer">
+
+                        <select id="language">
+
+                            <option value="cpp">C++</option>
+                            <option value="c">C</option>
+                            <option value="java">Java</option>
+                            <option value="python">Python</option>
+
+                        </select>
+
+                        <button id="solveBtn">
+                            ➜
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </footer>
+
+        </section>
+
+    </main>
+
+    <!-- Marked -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
+
+    <!-- Highlight.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+
+    <script type="module" src="js/pages/problem.js"></script>
+    <script type="module" src="js/pages/history.js"></script>
+    <script type="module" src="js/components/sidebar.js"></script>
+    <script type="module" src="js/utils/theme.js"></script>
+    <script type="module" src="js/auth.js"></script>
+    <script type="module" src="js/user.js"></script>
+</body>
+</html>

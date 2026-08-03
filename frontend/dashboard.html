@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CodeMentor AI | Dashboard</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Dashboard CSS -->
+    <link rel="stylesheet" href="css/base/variables.css">
+    <link rel="stylesheet" href="css/base/theme.css">
+    <link rel="stylesheet" href="css/components/navbar.css">
+    <link rel="stylesheet" href="css/components/buttons.css">
+    <link rel="stylesheet" href="css/pages/dashboard.css">
+    <script>
+        if(localStorage.getItem("theme")==="dark"){
+            document.documentElement.classList.add("dark");
+        }
+    </script>
+</head>
+
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            CodeMentor AI
+        </div>
+
+        <div class="nav-links">
+
+            <!--<a href="dashboard.html" class="active">Dashboard</a>-->
+
+            <a href="history.html">History</a>
+
+            <button id="themeToggle" class="theme-btn">
+                🌙
+            </button>
+
+            <a href="#" onclick="logout(); return false;">Logout</a>
+
+        </div>
+
+        <div class="user-menu">
+
+            <span id="username">
+                User
+            </span>
+
+        </div>
+
+    </nav>
+
+    <!-- ================= HERO ================= -->
+
+    <section class="hero">
+
+        <h1>
+            👋 Welcome Back
+        </h1>
+        
+        <p>
+            Your AI-Powered Competitive Programming Companion
+        </p>
+
+    </section>
+
+    <!-- ================= FEATURE CARDS ================= -->
+
+    <section class="feature-grid">
+
+        <a href="problem.html" class="card">
+
+            <div class="icon">📝</div>
+
+            <div class="card-tag">PROBLEM SOLVER</div>
+
+            <p>
+            Solve competitive programming problems with AI-generated
+            approaches, explanations, and optimized solutions.
+            </p>
+
+        </a>
+
+        <a href="debugger.html" class="card">
+
+            <div class="icon">🐞</div>
+
+            <div class="card-tag">AI-DEBUGGER</div>
+
+            <p>
+
+                Detect bugs, runtime errors,
+                logical mistakes and receive
+                corrected code instantly.
+
+            </p>
+
+        </a>
+
+        <a href="complexity.html" class="card">
+
+            <div class="icon">📊</div>
+
+            <div class="card-tag">COMPLEXITY ANALYZER</div>
+
+            <p>
+                Analyze the time complexity, space complexity,
+                bottlenecks, and optimization opportunities in your code.
+            </p>
+
+        </a>
+
+        <a href="testcase.html" class="card">
+
+            <div class="icon">🧪</div>
+
+            <div class="card-tag">TEST-CASE GENERATOR</div>
+
+            <p>
+                Generate sample, edge, corner, and maximum constraint test cases for any programming problem.
+            </p>
+
+        </a>
+
+        <a href="algorithm.html" class="card">
+
+            <div class="icon">📚</div>
+
+            <div class="card-tag">ALGORITHM TUTOR</div>
+
+            <p>
+                Master algorithms with AI explanations,
+                visual intuition,
+                time complexity,
+                examples,
+                and interview tips.
+            </p>
+
+        </a>
+
+        <a href="history.html" class="card">
+
+            <div class="icon">🕒</div>
+
+            <div class="card-tag">HISTORY</div>
+
+            <p>View previous AI conversations.</p>
+
+        </a>
+
+    </section>
+
+    <!-- ================= RECENT ACTIVITY ================= -->
+
+    <!-- ================= STATISTICS ================= -->
+
+<section class="activity">
+
+    <h2>Statistics</h2>
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <h3 id="totalChats">0</h3>
+            <p>Total Conversations</p>
+        </div>
+
+        <div class="stat-card">
+            <h3 id="cppCount">0</h3>
+            <p>C++</p>
+        </div>
+
+        <div class="stat-card">
+            <h3 id="pythonCount">0</h3>
+            <p>Python</p>
+        </div>
+
+        <div class="stat-card">
+            <h3 id="javaCount">0</h3>
+            <p>Java</p>
+        </div>
+
+        <div class="stat-card">
+            <h3 id="cCount">0</h3>
+            <p>C</p>
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= RECENT ACTIVITY ================= -->
+
+<section class="activity">
+
+    <h2>Recent Activity</h2>
+
+    <div id="recentActivity"></div>
+
+</section>
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer>
+
+        CodeMentor AI • Your AI Competitive Programming Companion
+
+    </footer>
+
+    <script type="module" src="js/pages/dashboard.js"></script>
+    <script type="module" src="js/utils/theme.js"></script>
+    <script type="module" src="js/auth.js"></script>
+    
+    <script type="module" src="js/user.js"></script>
+</body>
+
+</html>

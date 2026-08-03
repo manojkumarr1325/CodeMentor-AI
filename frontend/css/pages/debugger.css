@@ -1,0 +1,10 @@
+/* Debugger page */
+
+.debugger-workspace .editor-container {
+    height: 180px;
+}
+
+.debugger-workspace #problemInput {
+    width: 100%;
+    height: 100%;
+}

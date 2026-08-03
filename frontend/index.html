@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CodeMentor AI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/base/variables.css">
+    <link rel="stylesheet" href="css/base/theme.css">
+
+    <link rel="stylesheet" href="css/components/navbar.css">
+    <link rel="stylesheet" href="css/components/buttons.css">
+
+    <link rel="stylesheet" href="css/pages/index.css">
+    <script>
+        if(localStorage.getItem("theme")==="dark"){
+            document.documentElement.classList.add("dark");
+        }
+    </script>
+</head>
+
+<body>
+
+    <div class="background-blobs">
+
+        <div class="blob blob1"></div>
+
+        <div class="blob blob2"></div>
+
+        <div class="blob blob3"></div>
+
+    </div>
+
+    <!-- ================= NAVBAR ================= -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+
+            CodeMentor AI
+
+        </div>
+
+        <div class="nav-links">
+
+            <a href="#features">Features</a>
+
+            <a href="#about">About</a>
+
+            <a href="login.html">Login</a>
+
+            <!--<button id="themeToggle" class="theme-btn">
+                🌙
+            </button>-->
+
+        </div>
+
+    </nav>
+
+    <!-- ================= HERO ================= -->
+
+    <section class="hero reveal">
+
+        <div class="hero-content">
+
+            <span class="badge">
+
+                🚀 AI Powered Competitive Programming
+
+            </span>
+
+            <h1>
+
+            <span class="gradient-text">
+
+            CodeMentor AI
+
+            </span>
+
+            <br>
+
+            Your AI Competitive Programming Assistant
+
+            </h1>
+
+            <p>
+
+                Master Competitive Programming with AI.
+
+                Generate optimized solutions, debug your code,
+                analyze complexity, and learn algorithms—
+                all in one modern workspace.
+
+            </p>
+
+            <div class="hero-buttons">
+
+                <a href="login.html" class="primary-btn">
+
+                    Get Started →
+
+                </a>
+
+                <a href="#features" class="secondary-btn">
+
+                    Explore Features
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="hero-image">
+
+                <div class="ai-preview">
+
+                    <div class="preview-header">
+
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+
+                        <span>CodeMentor AI</span>
+
+                    </div>
+
+                    <div class="preview-body">
+
+                        <div class="preview-user">
+
+                            <strong>👤 User</strong>
+
+                            <p>
+                                Solve Two Sum using C++
+                            </p>
+
+                        </div>
+
+                        <div class="preview-ai">
+
+                            <strong>🤖 CodeMentor AI</strong>
+
+                            <p id="typingPreview"></p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ================= FEATURES ================= -->
+
+    <section class="features reveal" id="features">
+
+        <h2>Why Choose CodeMentor AI?</h2>
+
+        <p class="section-subtitle">
+
+            Everything you need to become better at Competitive Programming.
+
+        </p>
+
+        <div class="feature-grid">
+
+            <div class="feature-card">
+
+                <div class="feature-icon">🤖</div>
+
+                <h3>AI Problem Solver</h3>
+
+                <p>
+
+                    Understand problems, approaches,
+                    algorithms and optimized code.
+
+                </p>
+
+            </div>
+
+            <div class="feature-card">
+
+                <div class="feature-icon">🐞</div>
+
+                <h3>AI Debugger</h3>
+
+                <p>
+
+                    Detect logical, runtime and syntax
+                    errors with explanations.
+
+                </p>
+
+            </div>
+
+            <div class="feature-card">
+
+                <div class="feature-icon">📊</div>
+
+                <h3>Complexity Analyzer</h3>
+
+                <p>
+
+                    Analyze time and space complexity
+                    with optimization suggestions.
+
+                </p>
+
+            </div>
+
+            <div class="feature-card">
+
+                <div class="feature-icon">📚</div>
+
+                <h3>Algorithm Tutor</h3>
+
+                <p>
+
+                    Learn DSA concepts step-by-step
+                    with interactive AI.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ================= HOW IT WORKS ================= -->
+
+    <section class="workflow reveal" id="about">
+
+        <h2>How It Works</h2>
+
+        <p class="section-subtitle">
+            Four simple steps to solve competitive programming problems.
+        </p>
+
+        <div class="workflow-container">
+
+            <div class="step">
+
+                <div class="step-number">1</div>
+
+                <h3>Paste Problem</h3>
+
+                <p>
+                    Paste your competitive programming problem or code.
+                </p>
+
+            </div>
+
+            <div class="arrow">-></div>
+
+            <div class="step">
+
+                <div class="step-number">2</div>
+
+                <h3>AI Analysis</h3>
+
+                <p>
+                    CodeMentor AI understands the problem and analyzes it.
+                </p>
+
+            </div>
+
+            <div class="arrow">-></div>
+
+            <div class="step">
+
+                <div class="step-number">3</div>
+
+                <h3>Optimized Solution</h3>
+
+                <p>
+                    Receive efficient algorithms and clean code.
+                </p>
+
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <div class="step">
+
+                <div class="step-number">4</div>
+
+                <h3>Learn & Improve</h3>
+
+                <p>
+                    Understand the concepts and become a better programmer.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="stats reveal">
+
+        <div class="stat">
+
+            <h2 class="counter" data-target="6">0</h2>
+
+            <p>AI Tools</p>
+
+        </div>
+
+        <div class="stat">
+
+            <h2 class="counter" data-target="100">0</h2>
+
+            <p>% Responsive</p>
+
+        </div>
+
+        <div class="stat">
+
+            <h2 class="counter" data-target="24">0</h2>
+
+            <p>Hours Available</p>
+
+        </div>
+
+        <div class="stat">
+            <h3>More than</h3>
+            <h2 class="counter" data-target="500">0</h2>
+            
+            <p>Problems Solved</p>
+
+        </div>
+
+    </section>
+
+    <!-- ================= TECHNOLOGIES ================= -->
+
+    <section class="tech-stack reveal">
+
+        <h2>Built With Modern Technologies</h2>
+
+        <p class="section-subtitle">
+            Powerful technologies that make CodeMentor AI fast and reliable.
+        </p>
+
+        <div class="tech-grid">
+
+            <div class="tech-item">🌐 HTML5</div>
+
+            <div class="tech-item">🎨 CSS3</div>
+
+            <div class="tech-item">⚡ JavaScript</div>
+
+            <div class="tech-item">🟢 Node.js</div>
+
+            <div class="tech-item">🚀 Express.js</div>
+
+            <div class="tech-item">♊︎ Gemini</div>
+
+            <div class="tech-item">📝 Marked.js</div>
+
+            <div class="tech-item">💻 Highlight.js</div>
+
+        </div>
+
+    </section>
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer class="reveal">
+
+        <h2>CodeMentor AI</h2>
+
+        <p>
+            Your AI-powered Competitive Programming Assistant
+        </p>
+
+        <div class="footer-links">
+
+            <a href="#">Home</a>
+
+            <a href="#features">Features</a>
+
+            <a href="login.html">Login</a>
+
+        </div>
+
+        <p class="copyright">
+
+            © 2026 CodeMentor AI
+
+        </p>
+
+    </footer>
+
+    <script src="js/common.js"></script>
+    <script src="js/pages/index.js"></script>
+    <script type="module" src="js/utils/theme.js"></script>
+</body>
+
+</html>
