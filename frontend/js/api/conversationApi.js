@@ -1,4 +1,4 @@
-const API = "http://localhost:3000/conversation";
+const API = "https://codementor-ai-kfkz.onrender.com/conversation";
 
 function getToken() {
     return localStorage.getItem("codementor_token");
