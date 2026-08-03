@@ -15,10 +15,23 @@ export async function callGemini(messages = []) {
         .map(m => `${m.role.toUpperCase()}:\n${m.content}`)
         .join("\n\n");
 
-    const response = await ai.models.generateContent({
-        model: MODEL,
-        contents: prompt
-    });
+    try {
 
-    return response.text;
+        const response = await ai.models.generateContent({
+            model: MODEL,
+            contents: prompt
+        });
+
+        return response.text;
+
+    } catch (err) {
+
+        console.error("Gemini Error:", err);
+
+        if (err.status === 503) {
+            throw new Error("AI service is temporarily busy. Please try again in a minute.");
+        }
+
+        throw err;
+    }
 }
