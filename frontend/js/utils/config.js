@@ -1,6 +1,6 @@
 export const CONFIG = {
 
-    API_BASE: "http://localhost:3000",
+    API_BASE: "https://codementor-ai-kfkz.onrender.com",
 
     THEME_KEY: "codementor_theme"
 
