@@ -21,12 +21,18 @@ router.post("/", async (req, res) => {
 
     } catch (err) {
 
-        console.error(err);
-
+        console.error("Algorithm Error:", err);
+    
+        if (err.status === 503 || err?.error?.code === 503) {
+            return res.status(503).json({
+                answer: "⚠️ Gemini AI is currently overloaded. Please try again in a minute."
+            });
+        }
+    
         res.status(500).json({
             answer: "Internal Server Error"
         });
-
+    
     }
 
 });
