@@ -7,7 +7,7 @@ const ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY
 });
 
-const MODEL = "gemini-2.0-flash";;
+const MODEL = "gemma-4-31b-it";;
 
 export async function callGemini(messages = []) {
 
