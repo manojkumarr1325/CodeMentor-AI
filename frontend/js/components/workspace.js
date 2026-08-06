@@ -101,14 +101,8 @@ export async function addAIMessage(markdown){
 
     box.innerHTML = formatResponse(markdown);
 
-    if (window.renderMathInElement) {
-        renderMathInElement(box, {
-            delimiters: [
-                { left: "$$", right: "$$", display: true },
-                { left: "$", right: "$", display: false }
-            ],
-            throwOnError: false
-        });
+    if (window.MathJax?.typesetPromise) {
+        await MathJax.typesetPromise([box]);
     }
 
     // Save the original code before Highlight.js modifies it
