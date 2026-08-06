@@ -101,6 +101,16 @@ export async function addAIMessage(markdown){
 
     box.innerHTML = formatResponse(markdown);
 
+    if (window.renderMathInElement) {
+        renderMathInElement(box, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false }
+            ],
+            throwOnError: false
+        });
+    }
+
     // Save the original code before Highlight.js modifies it
     box.querySelectorAll("pre code").forEach(block => {
         block.dataset.raw = block.textContent;
