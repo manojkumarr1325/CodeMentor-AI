@@ -279,3 +279,37 @@ ${date}
     });
 
 }
+
+clearBtn.addEventListener("click", async () => {
+    const confirmDelete = confirm(
+        "Are you sure you want to delete all conversations?"
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+        const response = await fetch(`${CONFIG.API_BASE}/conversation/clear`, {
+            method: "DELETE"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Failed to clear history");
+        }
+
+        container.innerHTML = "";
+
+        totalChats.textContent = "0";
+        problemChats.textContent = "0";
+        debugChats.textContent = "0";
+        complexityChats.textContent = "0";
+        testcaseChats.textContent = "0";
+        algorithmChats.textContent = "0";
+
+        alert("History cleared successfully.");
+    } catch (err) {
+        console.error(err);
+        alert("Unable to clear history.");
+    }
+});
