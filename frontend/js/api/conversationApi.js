@@ -52,9 +52,7 @@ export async function deleteConversationFromDB(id) {
 }
 
 export async function clearHistoryFromDB() {
-    const res = await fetch(`${CONFIG.API_BASE}/conversation/clear`, {
+    return request(`${API}/clear`, {
         method: "DELETE"
     });
-
-    return res.json();
 }
