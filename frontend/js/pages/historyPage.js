@@ -1,6 +1,7 @@
 import {
     getHistoryFromDB,
-    deleteConversationFromDB
+    deleteConversationFromDB,
+    clearHistoryFromDB
 } from "../api/conversationApi.js";
 
 const container = document.getElementById("historyContainer");
@@ -68,14 +69,6 @@ document.querySelectorAll(".filter-btn").forEach(btn => {
         applyFilters();
 
     });
-
-});
-
-// ================= Clear =================
-
-clearBtn?.addEventListener("click", () => {
-
-    alert("Clear History will be added after MongoDB bulk delete is implemented.");
 
 });
 
@@ -280,36 +273,34 @@ ${date}
 
 }
 
-clearBtn.addEventListener("click", async () => {
-    const confirmDelete = confirm(
-        "Are you sure you want to delete all conversations?"
-    );
+// ================= Clear All =================
 
-    if (!confirmDelete) return;
+clearBtn?.addEventListener("click", async () => {
+
+    if (!confirm("Are you sure you want to delete all conversations?")) {
+        return;
+    }
 
     try {
-        const response = await fetch(`${CONFIG.API_BASE}/conversation/clear`, {
-            method: "DELETE"
-        });
 
-        const data = await response.json();
+        await clearHistoryFromDB();
 
-        if (!response.ok) {
-            throw new Error(data.error || "Failed to clear history");
-        }
+        history = [];
 
-        container.innerHTML = "";
+        updateStats();
 
-        totalChats.textContent = "0";
-        problemChats.textContent = "0";
-        debugChats.textContent = "0";
-        complexityChats.textContent = "0";
-        testcaseChats.textContent = "0";
-        algorithmChats.textContent = "0";
+        applyFilters();
+
+        localStorage.removeItem("currentConversationId");
 
         alert("History cleared successfully.");
+
     } catch (err) {
+
         console.error(err);
+
         alert("Unable to clear history.");
+
     }
+
 });
