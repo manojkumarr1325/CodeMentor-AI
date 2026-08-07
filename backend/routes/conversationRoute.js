@@ -149,6 +149,8 @@ router.delete("/:id", authMiddleware, async (req, res) => {
 export default router;
 
 
+// ================= Clear All =================
+
 router.delete("/clear", authMiddleware, async (req, res) => {
 
     try {
