@@ -50,3 +50,11 @@ export async function deleteConversationFromDB(id) {
         method: "DELETE"
     });
 }
+
+export async function clearHistoryFromDB() {
+    const res = await fetch(`${CONFIG.API_BASE}/conversation/clear`, {
+        method: "DELETE"
+    });
+
+    return res.json();
+}
