@@ -44,7 +44,7 @@
 
 .stat-card{
 
-    background:#22c55e;
+    background:var(--surface);
 
     border:1px solid var(--border);
 
