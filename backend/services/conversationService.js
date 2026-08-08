@@ -93,9 +93,7 @@ export async function deleteConversation(id, userId) {
 // ================= Clear All =================
 
 export async function clearHistory(userId) {
-
     return await Conversation.deleteMany({
         user: userId
     });
-
 }
