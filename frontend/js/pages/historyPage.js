@@ -3,134 +3,81 @@ import {
     deleteConversationFromDB
 } from "../api/conversationApi.js";
 
-const container = document.getElementById("historyContainer");
-const search = document.getElementById("searchInput");
-const clearBtn = document.getElementById("clearBtn");
 
-const totalChats = document.getElementById("totalCount");
-const problemChats = document.getElementById("problemCount");
-const debugChats = document.getElementById("debugCount");
-const complexityChats = document.getElementById("complexityCount");
-const testcaseChats = document.getElementById("testcaseCount");
-const algorithmChats = document.getElementById("algorithmCount");
+const historyList =
+    document.getElementById("historyList");
 
-let history = [];
-let currentTool = "all";
+const newChatBtn =
+    document.getElementById("newChatBtn");
 
-// ================= Load History =================
 
-async function loadHistory() {
+// ================= Render Sidebar =================
+
+async function renderSidebar() {
+
+    if (!historyList) {
+        return;
+    }
+
+
+    const currentConversationId =
+        localStorage.getItem(
+            "currentConversationId"
+        );
+
+
+    let history = [];
+
 
     try {
 
-        history = await getHistoryFromDB();
+        /*
+         * Get the current page/tool.
+         *
+         * Example:
+         * problem
+         * debug
+         * complexity
+         * testcase
+         * algorithm
+         */
 
-        updateStats();
+        const tool =
+            document.body.dataset.tool;
 
-        applyFilters();
 
-    }
+        history =
+            await getHistoryFromDB(tool || "");
 
-    catch (err) {
 
-        console.error(err);
+    } catch (error) {
 
-        container.innerHTML = `
-            <div class="empty">
-                Unable to load conversations.
+        console.error(
+            "Unable to load sidebar history:",
+            error
+        );
+
+
+        historyList.innerHTML = `
+            <div class="history-empty">
+                Unable to load history
             </div>
         `;
 
+
+        return;
+
     }
 
-}
 
-await loadHistory();
+    historyList.innerHTML = "";
 
-// ================= Search =================
 
-search?.addEventListener("input", applyFilters);
+    if (history.length === 0) {
 
-// ================= Filters =================
-
-document.querySelectorAll(".filter-btn").forEach(btn => {
-
-    btn.addEventListener("click", () => {
-
-        document
-            .querySelectorAll(".filter-btn")
-            .forEach(b => b.classList.remove("active"));
-
-        btn.classList.add("active");
-
-        currentTool = btn.dataset.tool;
-
-        applyFilters();
-
-    });
-
-});
-
-// ================= Apply Filters =================
-
-function applyFilters() {
-
-    const keyword = search.value.trim().toLowerCase();
-
-    const filtered = history.filter(chat => {
-
-        const text = (
-            (chat.title || "") +
-            " " +
-            (chat.messages?.[0]?.content || "")
-        ).toLowerCase();
-
-        const matchesSearch = text.includes(keyword);
-
-        const matchesTool =
-            currentTool === "all" ||
-            chat.tool === currentTool;
-
-        return matchesSearch && matchesTool;
-
-    });
-
-    render(filtered);
-
-}
-
-// ================= Statistics =================
-
-function updateStats() {
-
-    totalChats.textContent = history.length;
-
-    problemChats.textContent =
-        history.filter(x => x.tool === "problem").length;
-
-    debugChats.textContent =
-        history.filter(x => x.tool === "debug").length;
-
-    complexityChats.textContent =
-        history.filter(x => x.tool === "complexity").length;
-
-    testcaseChats.textContent =
-        history.filter(x => x.tool === "testcase").length;
-
-    algorithmChats.textContent =
-        history.filter(x => x.tool === "algorithm").length;
-
-}
-
-// ================= Render =================
-
-function render(list) {
-
-    if (list.length === 0) {
-
-        container.innerHTML = `
-            <div class="empty">
-                No conversations found.
+        historyList.innerHTML = `
+            <div class="history-empty">
+                No conversations yet
             </div>
         `;
 
@@ -138,168 +85,229 @@ function render(list) {
 
     }
 
-    container.innerHTML = "";
 
-    list.forEach(chat => {
+    history.forEach(chat => {
 
-        const icon = {
+        const item =
+            document.createElement("div");
 
-            problem: "📝",
-            debug: "🐞",
-            complexity: "📊",
-            testcase: "🧪",
-            algorithm: "📚"
 
-        }[chat.tool] || "💬";
+        item.className =
+            chat._id === currentConversationId
+                ? "history-item active"
+                : "history-item";
 
-        const card = document.createElement("div");
 
-        card.className = "history-card";
+        item.innerHTML = `
 
-        const date = new Date(chat.createdAt)
-            .toLocaleString();
+            <div class="history-title">
 
-        card.innerHTML = `
+                📄 ${chat.title || "New Chat"}
 
-<div class="history-delete" title="Delete Conversation">
-🗑️
-</div>
+            </div>
 
-<div class="history-tool">
+            <div class="history-language">
 
-${icon}
-${chat.tool.charAt(0).toUpperCase() + chat.tool.slice(1)}
+                ${chat.language || ""}
 
-</div>
+            </div>
 
-<div class="history-language">
+            <button
+                class="history-delete"
+                title="Delete"
+            >
+                🗑️
+            </button>
 
-${chat.language || ""}
+        `;
 
-</div>
-
-<h2>
-
-${chat.title || "New Chat"}
-
-</h2>
-
-<div class="meta">
-
-${date}
-
-</div>
-
-`;
 
         // ================= Open Conversation =================
 
-        card.addEventListener("click", () => {
+        item.addEventListener(
+            "click",
+            () => {
 
-            localStorage.setItem(
-                "currentConversationId",
-                chat._id
-            );
+                localStorage.setItem(
+                    "currentConversationId",
+                    chat._id
+                );
 
-            switch (chat.tool) {
 
-                case "problem":
-                    location.href = "problem.html";
-                    break;
-
-                case "debug":
-                    location.href = "debugger.html";
-                    break;
-
-                case "complexity":
-                    location.href = "complexity.html";
-                    break;
-
-                case "testcase":
-                    location.href = "testcase.html";
-                    break;
-
-                case "algorithm":
-                    location.href = "algorithm.html";
-                    break;
-
-                default:
-                    location.href = "problem.html";
+                location.reload();
 
             }
+        );
 
-        });
 
         // ================= Delete Conversation =================
 
-        card.querySelector(".history-delete")
-            .addEventListener("click", async (e) => {
+        const deleteButton =
+            item.querySelector(
+                ".history-delete"
+            );
 
-                e.stopPropagation();
 
-                if (!confirm("Delete this conversation?"))
+        deleteButton.addEventListener(
+            "click",
+            async event => {
+
+                event.stopPropagation();
+
+
+                const confirmed = confirm(
+                    "Delete this conversation?"
+                );
+
+
+                if (!confirmed) {
                     return;
+                }
+
 
                 try {
 
-                    await deleteConversationFromDB(chat._id);
+                    await deleteConversationFromDB(
+                        chat._id
+                    );
+
 
                     if (
-                        localStorage.getItem("currentConversationId") === chat._id
+                        localStorage.getItem(
+                            "currentConversationId"
+                        ) === chat._id
                     ) {
 
-                        localStorage.removeItem("currentConversationId");
+                        localStorage.removeItem(
+                            "currentConversationId"
+                        );
 
                     }
 
-                    await loadHistory();
+
+                    await renderSidebar();
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Unable to delete conversation:",
+                        error
+                    );
+
+
+                    alert(
+                        "Unable to delete conversation."
+                    );
 
                 }
 
-                catch (err) {
+            }
+        );
 
-                    console.error(err);
 
-                    alert("Unable to delete conversation.");
-
-                }
-
-            });
-
-        container.appendChild(card);
+        historyList.appendChild(item);
 
     });
 
 }
 
-// ================= Clear All =================
 
-clearBtn?.addEventListener("click", async () => {
+// ================= New Chat =================
 
-    if (!confirm("Are you sure you want to delete all conversations?")) {
-        return;
-    }
+if (newChatBtn) {
 
-    try {
+    newChatBtn.addEventListener(
+        "click",
+        () => {
 
-        await clearHistoryFromDB();
+            console.log(
+                "New Chat clicked"
+            );
 
-        history = [];
 
-        updateStats();
+            // --------------------------------
+            // Remove MongoDB current ID
+            // --------------------------------
 
-        applyFilters();
+            localStorage.removeItem(
+                "currentConversationId"
+            );
 
-        localStorage.removeItem("currentConversationId");
 
-        alert("History cleared successfully.");
+            // --------------------------------
+            // Remove current conversation
+            // for every tool
+            // --------------------------------
 
-    } catch (err) {
+            const currentKeys = [
 
-        console.error(err);
+                "codementor_problem_current",
 
-        alert("Unable to clear history.");
+                "codementor_debug_current",
 
-    }
+                "codementor_complexity_current",
 
-});
+                "codementor_testcase_current",
+
+                "codementor_algorithm_current"
+
+            ];
+
+
+            currentKeys.forEach(key => {
+
+                localStorage.removeItem(key);
+
+            });
+
+
+            // --------------------------------
+            // Remove active chat
+            // for every tool
+            // --------------------------------
+
+            const activeKeys = [
+
+                "codementor_problem_active",
+
+                "codementor_debug_active",
+
+                "codementor_complexity_active",
+
+                "codementor_testcase_active",
+
+                "codementor_algorithm_active"
+
+            ];
+
+
+            activeKeys.forEach(key => {
+
+                localStorage.removeItem(key);
+
+            });
+
+
+            // --------------------------------
+            // Reload current tool page
+            // --------------------------------
+
+            window.location.reload();
+
+        }
+    );
+
+}
+
+
+// ================= Global Sidebar Refresh =================
+
+window.refreshSidebar =
+    renderSidebar;
+
+
+// ================= Initial Load =================
+
+renderSidebar();
+```
