@@ -4,6 +4,10 @@ import {
     clearHistoryFromDB
 } from "../api/conversationApi.js";
 
+import {
+    clearHistory as clearLocalHistory
+} from "../utils/storage.js";
+
 
 const container =
     document.getElementById("historyContainer");
@@ -51,20 +55,22 @@ async function loadHistory() {
 
         applyFilters();
 
-    }
-
-    catch (err) {
+    } catch (err) {
 
         console.error(
             "Unable to load history:",
             err
         );
 
-        container.innerHTML = `
-            <div class="empty">
-                Unable to load conversations.
-            </div>
-        `;
+        if (container) {
+
+            container.innerHTML = `
+                <div class="empty">
+                    Unable to load conversations.
+                </div>
+            `;
+
+        }
 
     }
 
@@ -94,9 +100,9 @@ document
 
                 document
                     .querySelectorAll(".filter-btn")
-                    .forEach(b =>
-                        b.classList.remove("active")
-                    );
+                    .forEach(b => {
+                        b.classList.remove("active");
+                    });
 
                 btn.classList.add("active");
 
@@ -111,16 +117,15 @@ document
     });
 
 
-// ================= Clear All =================
+// ================= CLEAR ALL =================
 
 clearBtn?.addEventListener(
     "click",
     async () => {
 
-        const confirmDelete =
-            confirm(
-                "Are you sure you want to delete ALL conversations?"
-            );
+        const confirmDelete = confirm(
+            "Are you sure you want to delete ALL conversations?"
+        );
 
         if (!confirmDelete) {
             return;
@@ -131,58 +136,100 @@ clearBtn?.addEventListener(
 
             clearBtn.disabled = true;
 
+            const oldText =
+                clearBtn.textContent;
+
             clearBtn.textContent =
                 "Clearing...";
 
 
+            // --------------------------------
+            // 1. Delete from MongoDB
+            // --------------------------------
+
             await clearHistoryFromDB();
 
 
-            // Clear local history
-            history = [];
+            // --------------------------------
+            // 2. Clear localStorage
+            // --------------------------------
+
+            clearLocalHistory();
 
 
-            // Remove current conversation
+            // --------------------------------
+            // 3. Clear current MongoDB ID
+            // --------------------------------
+
             localStorage.removeItem(
                 "currentConversationId"
             );
 
 
-            // Reset statistics
+            // --------------------------------
+            // 4. Clear history array
+            // --------------------------------
+
+            history = [];
+
+
+            // --------------------------------
+            // 5. Reset statistics
+            // --------------------------------
+
             updateStats();
 
 
-            // Update UI
+            // --------------------------------
+            // 6. Re-render history
+            // --------------------------------
+
             applyFilters();
 
 
+            // --------------------------------
+            // 7. Tell sidebar to refresh
+            // --------------------------------
+
+            if (
+                typeof window.refreshSidebar ===
+                "function"
+            ) {
+
+                await window.refreshSidebar();
+
+            }
+
+
+            clearBtn.textContent =
+                oldText;
+
+            clearBtn.disabled = false;
+
+
             alert(
-                "All conversations have been cleared successfully."
+                "All conversations cleared successfully."
             );
 
 
-        }
-
-        catch (err) {
+        } catch (err) {
 
             console.error(
-                "Clear history error:",
+                "Clear All error:",
                 err
             );
 
-            alert(
-                "Unable to clear history.\n\n" +
-                err.message
-            );
-
-        }
-
-        finally {
 
             clearBtn.disabled = false;
 
             clearBtn.textContent =
                 "Clear All";
+
+
+            alert(
+                "Unable to clear history.\n\n" +
+                err.message
+            );
 
         }
 
@@ -206,9 +253,7 @@ function applyFilters() {
             const text = (
 
                 (chat.title || "") +
-
                 " " +
-
                 (chat.messages?.[0]?.content || "")
 
             ).toLowerCase();
@@ -399,7 +444,7 @@ function render(list) {
         `;
 
 
-        // ================= Open Conversation =================
+        // ================= Open =================
 
         card.addEventListener(
             "click",
@@ -508,12 +553,11 @@ function render(list) {
 
                         await loadHistory();
 
-                    }
 
-                    catch (err) {
+                    } catch (err) {
 
                         console.error(
-                            "Delete error:",
+                            "Delete conversation error:",
                             err
                         );
 
