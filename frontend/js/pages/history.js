@@ -1,21 +1,45 @@
+
 import {
     getHistoryFromDB,
     deleteConversationFromDB,
     clearHistoryFromDB
 } from "../api/conversationApi.js";
 
-const container = document.getElementById("historyContainer");
-const search = document.getElementById("searchInput");
-const clearBtn = document.getElementById("clearBtn");
 
-const totalChats = document.getElementById("totalCount");
-const problemChats = document.getElementById("problemCount");
-const debugChats = document.getElementById("debugCount");
-const complexityChats = document.getElementById("complexityCount");
-const testcaseChats = document.getElementById("testcaseCount");
-const algorithmChats = document.getElementById("algorithmCount");
+// ================= DOM Elements =================
+
+const container =
+    document.getElementById("historyContainer");
+
+const search =
+    document.getElementById("searchInput");
+
+const clearBtn =
+    document.getElementById("clearBtn");
+
+const totalChats =
+    document.getElementById("totalCount");
+
+const problemChats =
+    document.getElementById("problemCount");
+
+const debugChats =
+    document.getElementById("debugCount");
+
+const complexityChats =
+    document.getElementById("complexityCount");
+
+const testcaseChats =
+    document.getElementById("testcaseCount");
+
+const algorithmChats =
+    document.getElementById("algorithmCount");
+
+
+// ================= Variables =================
 
 let history = [];
+
 let currentTool = "all";
 
 
@@ -25,15 +49,22 @@ async function loadHistory() {
 
     try {
 
+        console.log("Loading history...");
+
         history = await getHistoryFromDB();
+
+        console.log("History loaded:", history);
 
         updateStats();
 
         applyFilters();
 
-    } catch (err) {
+    } catch (error) {
 
-        console.error("Unable to load history:", err);
+        console.error(
+            "Unable to load history:",
+            error
+        );
 
         if (container) {
 
@@ -52,93 +83,138 @@ async function loadHistory() {
 
 // ================= Search =================
 
-search?.addEventListener("input", applyFilters);
+if (search) {
+
+    search.addEventListener(
+        "input",
+        applyFilters
+    );
+
+}
 
 
 // ================= Filters =================
 
-document.querySelectorAll(".filter-btn").forEach(btn => {
+document
+    .querySelectorAll(".filter-btn")
+    .forEach(button => {
 
-    btn.addEventListener("click", () => {
+        button.addEventListener(
+            "click",
+            () => {
 
-        document
-            .querySelectorAll(".filter-btn")
-            .forEach(b => b.classList.remove("active"));
+                document
+                    .querySelectorAll(".filter-btn")
+                    .forEach(btn => {
+                        btn.classList.remove("active");
+                    });
 
-        btn.classList.add("active");
 
-        currentTool = btn.dataset.tool;
+                button.classList.add("active");
 
-        applyFilters();
+
+                currentTool =
+                    button.dataset.tool;
+
+
+                applyFilters();
+
+            }
+        );
 
     });
-
-});
 
 
 // ================= Clear All =================
 
-clearBtn?.addEventListener("click", async () => {
+if (clearBtn) {
 
-    const confirmDelete = confirm(
-        "Are you sure you want to delete all conversations?"
+    clearBtn.addEventListener(
+        "click",
+        async () => {
+
+            console.log("Clear All clicked");
+
+
+            const confirmed = confirm(
+                "Are you sure you want to delete all conversations?"
+            );
+
+
+            if (!confirmed) {
+                return;
+            }
+
+
+            try {
+
+                clearBtn.disabled = true;
+
+                const originalText =
+                    clearBtn.textContent;
+
+                clearBtn.textContent =
+                    "Clearing...";
+
+
+                // Delete from MongoDB
+                await clearHistoryFromDB();
+
+
+                // Clear local array
+                history = [];
+
+
+                // Remove currently opened conversation
+                localStorage.removeItem(
+                    "currentConversationId"
+                );
+
+
+                // Reset statistics
+                updateStats();
+
+
+                // Render empty state
+                applyFilters();
+
+
+                clearBtn.textContent =
+                    originalText;
+
+                clearBtn.disabled = false;
+
+
+                alert(
+                    "All conversations cleared successfully."
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Clear All failed:",
+                    error
+                );
+
+
+                clearBtn.disabled = false;
+
+                clearBtn.textContent =
+                    "Clear All";
+
+
+                alert(
+                    "Unable to clear history.\n\n" +
+                    error.message
+                );
+
+            }
+
+        }
     );
 
-    if (!confirmDelete) {
-        return;
-    }
-
-    try {
-
-        clearBtn.disabled = true;
-
-        const originalText = clearBtn.textContent;
-
-        clearBtn.textContent = "Clearing...";
-
-
-        // Delete all conversations from MongoDB
-        await clearHistoryFromDB();
-
-
-        // Clear local history array
-        history = [];
-
-
-        // Remove current MongoDB conversation ID
-        localStorage.removeItem("currentConversationId");
-
-
-        // Reset statistics
-        updateStats();
-
-
-        // Show empty history
-        applyFilters();
-
-
-        clearBtn.textContent = originalText;
-
-        clearBtn.disabled = false;
-
-        alert("History cleared successfully.");
-
-    } catch (err) {
-
-        console.error("Clear All error:", err);
-
-        clearBtn.disabled = false;
-
-        clearBtn.textContent = "Clear All";
-
-        alert(
-            "Unable to clear history.\n\n" +
-            err.message
-        );
-
-    }
-
-});
+}
 
 
 // ================= Apply Filters =================
@@ -146,26 +222,39 @@ clearBtn?.addEventListener("click", async () => {
 function applyFilters() {
 
     const keyword =
-        search?.value.trim().toLowerCase() || "";
+        search?.value
+            .trim()
+            .toLowerCase() || "";
 
-    const filtered = history.filter(chat => {
 
-        const text = (
-            (chat.title || "") +
-            " " +
-            (chat.messages?.[0]?.content || "")
-        ).toLowerCase();
+    const filtered =
+        history.filter(chat => {
 
-        const matchesSearch =
-            text.includes(keyword);
+            const text = (
 
-        const matchesTool =
-            currentTool === "all" ||
-            chat.tool === currentTool;
+                (chat.title || "") +
+                " " +
+                (chat.messages?.[0]?.content || "")
 
-        return matchesSearch && matchesTool;
+            ).toLowerCase();
 
-    });
+
+            const matchesSearch =
+                text.includes(keyword);
+
+
+            const matchesTool =
+                currentTool === "all" ||
+                chat.tool === currentTool;
+
+
+            return (
+                matchesSearch &&
+                matchesTool
+            );
+
+        });
+
 
     render(filtered);
 
@@ -176,43 +265,80 @@ function applyFilters() {
 
 function updateStats() {
 
-    totalChats.textContent = history.length;
+    if (totalChats) {
 
-    problemChats.textContent =
-        history.filter(
-            x => x.tool === "problem"
-        ).length;
+        totalChats.textContent =
+            history.length;
 
-    debugChats.textContent =
-        history.filter(
-            x => x.tool === "debug"
-        ).length;
+    }
 
-    complexityChats.textContent =
-        history.filter(
-            x => x.tool === "complexity"
-        ).length;
 
-    testcaseChats.textContent =
-        history.filter(
-            x => x.tool === "testcase"
-        ).length;
+    if (problemChats) {
 
-    algorithmChats.textContent =
-        history.filter(
-            x => x.tool === "algorithm"
-        ).length;
+        problemChats.textContent =
+            history.filter(
+                chat => chat.tool === "problem"
+            ).length;
+
+    }
+
+
+    if (debugChats) {
+
+        debugChats.textContent =
+            history.filter(
+                chat => chat.tool === "debug"
+            ).length;
+
+    }
+
+
+    if (complexityChats) {
+
+        complexityChats.textContent =
+            history.filter(
+                chat => chat.tool === "complexity"
+            ).length;
+
+    }
+
+
+    if (testcaseChats) {
+
+        testcaseChats.textContent =
+            history.filter(
+                chat => chat.tool === "testcase"
+            ).length;
+
+    }
+
+
+    if (algorithmChats) {
+
+        algorithmChats.textContent =
+            history.filter(
+                chat => chat.tool === "algorithm"
+            ).length;
+
+    }
 
 }
 
 
-// ================= Render =================
+// ================= Render History =================
 
 function render(list) {
 
     if (!container) {
+
+        console.error(
+            "historyContainer not found"
+        );
+
         return;
+
     }
+
 
     if (list.length === 0) {
 
@@ -223,38 +349,43 @@ function render(list) {
         `;
 
         return;
+
     }
 
+
     container.innerHTML = "";
+
 
     list.forEach(chat => {
 
         const icon = {
 
             problem: "📝",
+
             debug: "🐞",
+
             complexity: "📊",
+
             testcase: "🧪",
+
             algorithm: "📚"
 
         }[chat.tool] || "💬";
 
 
-        const card = document.createElement("div");
-
-        card.className = "history-card";
-
-
-        const date = new Date(
-            chat.createdAt
-        ).toLocaleString();
+        const card =
+            document.createElement("div");
 
 
-        /*
-         * Keep the simple card structure.
-         * Do NOT change this structure unnecessarily,
-         * because your existing CSS/sidebar may depend on it.
-         */
+        card.className =
+            "history-card";
+
+
+        const date =
+            new Date(
+                chat.createdAt
+            ).toLocaleString();
+
 
         card.innerHTML = `
 
@@ -264,7 +395,9 @@ function render(list) {
                     ${icon}
                     ${
                         chat.tool
-                            ? chat.tool.charAt(0).toUpperCase() +
+                            ? chat.tool
+                                .charAt(0)
+                                .toUpperCase() +
                               chat.tool.slice(1)
                             : "Chat"
                     }
@@ -296,62 +429,90 @@ function render(list) {
 
         // ================= Open Conversation =================
 
-        card.addEventListener("click", () => {
+        card.addEventListener(
+            "click",
+            () => {
 
-            localStorage.setItem(
-                "currentConversationId",
-                chat._id
-            );
+                localStorage.setItem(
+                    "currentConversationId",
+                    chat._id
+                );
 
 
-            switch (chat.tool) {
+                switch (chat.tool) {
 
-                case "problem":
-                    location.href = "problem.html";
-                    break;
+                    case "problem":
 
-                case "debug":
-                    location.href = "debugger.html";
-                    break;
+                        location.href =
+                            "problem.html";
 
-                case "complexity":
-                    location.href = "complexity.html";
-                    break;
+                        break;
 
-                case "testcase":
-                    location.href = "testcase.html";
-                    break;
 
-                case "algorithm":
-                    location.href = "algorithm.html";
-                    break;
+                    case "debug":
 
-                default:
-                    location.href = "problem.html";
+                        location.href =
+                            "debugger.html";
+
+                        break;
+
+
+                    case "complexity":
+
+                        location.href =
+                            "complexity.html";
+
+                        break;
+
+
+                    case "testcase":
+
+                        location.href =
+                            "testcase.html";
+
+                        break;
+
+
+                    case "algorithm":
+
+                        location.href =
+                            "algorithm.html";
+
+                        break;
+
+
+                    default:
+
+                        location.href =
+                            "problem.html";
+
+                }
 
             }
-
-        });
+        );
 
 
         // ================= Delete One =================
 
         const deleteButton =
-            card.querySelector(".history-delete");
+            card.querySelector(
+                ".history-delete"
+            );
 
 
         deleteButton.addEventListener(
             "click",
-            async (e) => {
+            async event => {
 
-                e.stopPropagation();
+                event.stopPropagation();
 
 
-                const confirmDelete = confirm(
+                const confirmed = confirm(
                     "Delete this conversation?"
                 );
 
-                if (!confirmDelete) {
+
+                if (!confirmed) {
                     return;
                 }
 
@@ -378,12 +539,14 @@ function render(list) {
 
                     await loadHistory();
 
-                } catch (err) {
+
+                } catch (error) {
 
                     console.error(
-                        "Delete conversation error:",
-                        err
+                        "Delete conversation failed:",
+                        error
                     );
+
 
                     alert(
                         "Unable to delete conversation."
@@ -405,3 +568,4 @@ function render(list) {
 // ================= Start =================
 
 loadHistory();
+```
