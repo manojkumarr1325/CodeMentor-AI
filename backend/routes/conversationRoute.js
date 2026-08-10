@@ -112,22 +112,38 @@ router.get("/:id", authMiddleware, async (req, res) => {
 
 // ================= Delete =================
 
-router.delete("/clear", authMiddleware, async (req, res) => {
-    try {
-        await clearHistory(req.user.id);
+router.delete(
+    "/clear",
+    authMiddleware,
+    async (req, res) => {
 
-        res.json({
-            message: "History cleared successfully"
-        });
+        try {
 
-    } catch (error) {
-        console.error(error);
+            const result =
+                await clearHistory(
+                    req.user.id
+                );
 
-        res.status(500).json({
-            error: error.message
-        });
+            res.json({
+                success: true,
+                message:
+                    "History cleared successfully",
+                deletedCount:
+                    result.deletedCount
+            });
+
+        } catch (error) {
+
+            console.error(error);
+
+            res.status(500).json({
+                error: error.message
+            });
+
+        }
+
     }
-});
+);
 
 router.delete("/:id", authMiddleware, async (req, res) => {
 
