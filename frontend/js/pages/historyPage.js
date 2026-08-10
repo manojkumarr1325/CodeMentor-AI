@@ -1,7 +1,6 @@
 import {
     getHistoryFromDB,
-    deleteConversationFromDB,
-    clearHistoryFromDB
+    deleteConversationFromDB
 } from "../api/conversationApi.js";
 
 const container = document.getElementById("historyContainer");
