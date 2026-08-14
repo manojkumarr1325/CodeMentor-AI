@@ -86,86 +86,53 @@ if(language){
 
 let firstQuery = true;
 
-
 const conversationId =
     localStorage.getItem(
-        "currentConversationId"
+        "codementor_algorithm_current"
     );
 
+if (conversationId) {
 
-if(conversationId){
-
-    try{
+    try {
 
         const savedConversation =
             await getConversationFromDB(
                 conversationId
             );
 
+        if (
+            savedConversation &&
+            savedConversation.tool === "algorithm"
+        ) {
 
-        if(savedConversation){
+            welcomeScreen.style.display = "none";
 
+            firstQuery = false;
 
-            // Prevent loading other tools history
-            if(savedConversation.tool !== "algorithm"){
+            if (savedConversation.messages) {
 
-                console.log(
-                    "Different tool conversation detected"
-                );
+                savedConversation.messages.forEach(msg => {
 
-            }
-            else{
+                    if (msg.role === "user") {
 
+                        addUserMessage(msg.content);
 
-                welcomeScreen.style.display =
-                    "none";
+                    } else if (msg.role === "assistant") {
 
-
-                firstQuery = false;
-
-
-                savedConversation.messages.forEach(
-                    msg => {
-
-
-                        if(msg.role === "user"){
-
-
-                            addUserMessage(
-                                msg.content
-                            );
-
-
-                        }
-                        else{
-
-
-                            addAIMessage(
-                                msg.content
-                            );
-
-
-                        }
-
+                        addAIMessage(msg.content);
 
                     }
-                );
 
-
-                scrollBottom();
-
-                attachCopyButtons();
-
+                });
 
             }
 
+            scrollBottom();
+            attachCopyButtons();
 
         }
 
-
-    }
-
-    catch(err){
+    } catch (err) {
 
         console.error(
             "Failed to load conversation:",
