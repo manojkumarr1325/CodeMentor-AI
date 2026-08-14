@@ -50,61 +50,39 @@ language.addEventListener("change", () => {
 
 /* ================= Load Previous Conversation ================= */
 
-const savedConversation =
-    getCurrentConversation();
+let savedConversation = getCurrentConversation();
 
-    if(
+if (
     savedConversation &&
     savedConversation.tool !== "testcase"
-){
+) {
     clearCurrentConversation();
+    savedConversation = null;
 }
 
 let firstQuery = true;
 
+if (savedConversation) {
 
-if(savedConversation){
+    welcomeScreen.style.display = "none";
 
-    if(savedConversation.tool !== "testcase"){
+    firstQuery = false;
 
-        localStorage.removeItem(
-            "codementor_current_testcase"
-        );
+    if (savedConversation.messages) {
 
-    }
-    else{
+        savedConversation.messages.forEach(msg => {
 
+            if (msg.role === "user") {
 
-        welcomeScreen.style.display =
-            "none";
+                addUserMessage(msg.content);
 
+            } else if (msg.role === "assistant") {
 
-        firstQuery = false;
+                addAIMessage(msg.content);
 
+            }
 
-        if(savedConversation.messages){
-
-            savedConversation.messages.forEach(msg=>{
-
-
-                if(msg.role==="user"){
-
-                    addUserMessage(
-                        msg.content
-                    );
-
-                }
-                else{
-
-                    addAIMessage(
-                        msg.content
-                    );
-
-                }
-
-            });
-
-        }
+        });
 
     }
 
