@@ -17,7 +17,12 @@ import {
 } from "../components/workspace.js";
 
 import {
-    setStorageType
+    setStorageType,
+    getCurrentConversation,
+    setCurrentConversation,
+    clearCurrentConversation,
+    getHistory,
+    setActiveChat
 } from "../utils/storage.js";
 
 import {
@@ -80,66 +85,56 @@ if(language){
 }
 
 
-// ==========================================
-// Load Existing Conversation
-// ==========================================
-
 let firstQuery = true;
 
-const conversationId =
-    localStorage.getItem(
-        "codementor_algorithm_current"
-    );
+let savedConversation =
+    getCurrentConversation();
 
-if (conversationId) {
+if (
+    savedConversation &&
+    savedConversation.tool !== "algorithm"
+) {
 
-    try {
+    clearCurrentConversation();
 
-        const savedConversation =
-            await getConversationFromDB(
-                conversationId
-            );
+    savedConversation = null;
 
-        if (
-            savedConversation &&
-            savedConversation.tool === "algorithm"
-        ) {
+}
 
-            welcomeScreen.style.display = "none";
+if (savedConversation) {
 
-            firstQuery = false;
+    welcomeScreen.style.display =
+        "none";
 
-            if (savedConversation.messages) {
+    firstQuery = false;
 
-                savedConversation.messages.forEach(msg => {
+    if (savedConversation.messages) {
 
-                    if (msg.role === "user") {
+        savedConversation.messages.forEach(msg => {
 
-                        addUserMessage(msg.content);
+            if (msg.role === "user") {
 
-                    } else if (msg.role === "assistant") {
+                addUserMessage(
+                    msg.content
+                );
 
-                        addAIMessage(msg.content);
+            } else if (
+                msg.role === "assistant"
+            ) {
 
-                    }
-
-                });
+                addAIMessage(
+                    msg.content
+                );
 
             }
 
-            scrollBottom();
-            attachCopyButtons();
-
-        }
-
-    } catch (err) {
-
-        console.error(
-            "Failed to load conversation:",
-            err
-        );
+        });
 
     }
+
+    scrollBottom();
+
+    attachCopyButtons();
 
 }
 
@@ -217,54 +212,10 @@ async function solveProblem(){
 
 
 
-        const currentId =
-            localStorage.getItem(
-                "currentConversationId"
-            );
+        const current=getCurrentConversation();
+        const currentId=current?._id || null;
 
-
-
-        if(currentId){
-
-
-            try{
-
-
-                const conversation =
-                    await getConversationFromDB(
-                        currentId
-                    );
-
-
-                if(
-                    conversation &&
-                    conversation.tool === "algorithm"
-                ){
-
-                    previousMessages =
-                        conversation.messages || [];
-
-                }
-
-
-            }
-
-            catch(err){
-
-
-                console.error(
-                    "Conversation load failed:",
-                    err
-                );
-
-
-            }
-
-
-        }
-
-
-
+        let previousMessages=current?.messages || [];
 
         const response =
             await fetch(
