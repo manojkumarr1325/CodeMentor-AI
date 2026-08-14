@@ -56,13 +56,14 @@ language.addEventListener("change", () => {
 
 // ================= Load Previous Conversation =================
 
-const savedConversation = getCurrentConversation();
+let savedConversation = getCurrentConversation();
 
-if(
+if (
     savedConversation &&
     savedConversation.tool !== "complexity"
-){
+) {
     clearCurrentConversation();
+    savedConversation = null;
 }
 
 let firstQuery = true;
@@ -81,8 +82,7 @@ if (savedConversation) {
 
                 addUserMessage(msg.content);
 
-            }
-            else {
+            } else if (msg.role === "assistant") {
 
                 addAIMessage(msg.content);
 
