@@ -52,19 +52,24 @@ language.addEventListener("change", () => {
 
 /* ================= Load Previous Conversation ================= */
 
-let savedConversation = getCurrentConversation();
+let savedConversation =
+    getCurrentConversation();
 
 if (
     savedConversation &&
     savedConversation.tool !== "debug"
 ) {
+
     clearCurrentConversation();
+
     savedConversation = null;
+
 }
 
 if (savedConversation) {
 
-    welcomeScreen.style.display = "none";
+    welcomeScreen.style.display =
+        "none";
 
     firstQuery = false;
 
@@ -74,11 +79,17 @@ if (savedConversation) {
 
             if (msg.role === "user") {
 
-                addUserMessage(msg.content);
+                addUserMessage(
+                    msg.content
+                );
 
-            } else if (msg.role === "assistant") {
+            } else if (
+                msg.role === "assistant"
+            ) {
 
-                addAIMessage(msg.content);
+                addAIMessage(
+                    msg.content
+                );
 
             }
 
