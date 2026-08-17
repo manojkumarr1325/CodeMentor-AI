@@ -1,83 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <title>CodeMentor AI - Algorithm Tutor</title>
 
-    <link rel="stylesheet" href="css/base/variables.css">
-    <link rel="stylesheet" href="css/base/theme.css">
-    <link rel="stylesheet" href="css/components/navbar.css">
-    <link rel="stylesheet" href="css/components/buttons.css">
-    <link rel="stylesheet" href="css/components/chat.css">
-    <link rel="stylesheet" href="css/components/sidebar.css">
-    <link rel="stylesheet" href="css/pages/workspace.css">
-    <link
-    id="hl-light"
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css">
+
+    <!-- ================= BASE CSS ================= -->
 
     <link
-    id="hl-dark"
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css"
-    disabled>
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        rel="stylesheet"
+        href="css/base/variables.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/base/theme.css"
+    >
+
+
+    <!-- ================= COMPONENT CSS ================= -->
+
+    <link
+        rel="stylesheet"
+        href="css/components/navbar.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/components/buttons.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/components/chat.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/components/sidebar.css"
+    >
+
+
+    <!-- ================= WORKSPACE CSS ================= -->
+
+    <link
+        rel="stylesheet"
+        href="css/pages/workspace.css"
+    >
+
+
+    <!-- ================= HIGHLIGHT.JS ================= -->
+
+    <link
+        id="hl-light"
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css"
+    >
+
+    <link
+        id="hl-dark"
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css"
+        disabled
+    >
+
+
+    <!-- ================= GOOGLE FONT ================= -->
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- ================= MATHJAX ================= -->
 
     <script>
-    window.MathJax = {
-        tex: {
-            inlineMath: [['$', '$'], ['\\(', '\\)']],
-            displayMath: [['$$', '$$'], ['\\[', '\\]']]
-        },
-        svg: {
-            fontCache: 'global'
-        }
-    };
+
+        window.MathJax = {
+
+            tex: {
+
+                inlineMath: [
+                    ['$', '$'],
+                    ['\\(', '\\)']
+                ],
+
+                displayMath: [
+                    ['$$', '$$'],
+                    ['\\[', '\\]']
+                ]
+
+            },
+
+            svg: {
+
+                fontCache: 'global'
+
+            }
+
+        };
+
     </script>
-    
+
+
     <script
-    id="MathJax-script"
-    async
-    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
-    </script>
-    
+        id="MathJax-script"
+        async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+    ></script>
+
+
+    <!-- ================= THEME ================= -->
+
     <script>
-        if(localStorage.getItem("theme")==="dark"){
+
+        if (
+            localStorage.getItem("theme") === "dark"
+        ) {
+
             document.documentElement.classList.add("dark");
+
         }
+
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.min.js"></script>
+
+
+    <!-- ================= MONACO ================= -->
+
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.min.js"
+    ></script>
+
 </head>
+
 
 <body data-tool="algorithm">
 
-    <!-- ================= NAVBAR ================= -->
+
+    <!-- ================================================= -->
+    <!-- NAVBAR -->
+    <!-- ================================================= -->
 
     <nav class="navbar">
 
+
         <div class="logo">
+
             CodeMentor AI
+
         </div>
+
 
         <div class="nav-links">
 
-            <button id="toggleSidebar" class="theme-btn">
+
+            <button
+                id="toggleSidebar"
+                class="theme-btn"
+            >
                 ☰
             </button>
 
-            <a href="dashboard.html" class="active">Dashboard</a>
 
-            <!--<a href="problem.html">Problem Solver</a>-->
+            <a
+                href="dashboard.html"
+                class="active"
+            >
+                Dashboard
+            </a>
 
-            <!--<a href="login.html">Logout</a>-->
 
-            <button id="themeToggle" class="theme-btn">
+            <button
+                id="themeToggle"
+                class="theme-btn"
+            >
                 🌙
             </button>
 
+
         </div>
+
 
         <div class="user-menu">
 
@@ -87,100 +198,240 @@
 
         </div>
 
+
     </nav>
 
 
 
-    <!-- ================= MAIN ================= -->
+    <!-- ================================================= -->
+    <!-- MAIN WORKSPACE -->
+    <!-- ================================================= -->
 
     <main class="workspace">
 
-        <!-- ================= SIDEBAR ================= -->
+
+        <!-- ================================================= -->
+        <!-- SIDEBAR -->
+        <!-- ================================================= -->
 
         <aside class="sidebar">
 
-            <button id="newChatBtn" class="new-chat-btn">
+
+            <!-- NEW CHAT -->
+
+            <button
+                id="newChatBtn"
+                class="new-chat-btn"
+            >
                 + New Chat
             </button>
 
+
+            <!-- RECENT CHATS -->
+
             <div class="sidebar-title">
+
                 Recent Chats
+
             </div>
 
-            <div id="historyList" class="history-list"></div>
+
+            <div
+                id="historyList"
+                class="history-list"
+            ></div>
+
 
         </aside>
 
-        <!-- ================= CHAT SECTION ================= -->
+
+
+        <!-- ================================================= -->
+        <!-- CHAT SECTION -->
+        <!-- ================================================= -->
 
         <section class="chat-section">
 
-            <!-- Scrollable Chat -->
+
+            <!-- ================= CHAT ================= -->
 
             <div class="chat-layout">
 
-                <div id="welcomeScreen" class="welcome">
 
-                    <h1>📚 Algorithm Tutor</h1>
+                <!-- WELCOME -->
+
+                <div
+                    id="welcomeScreen"
+                    class="welcome"
+                >
+
+                    <h1>
+                        📚 Algorithm Tutor
+                    </h1>
+
 
                     <p>
-                        Learn any Data Structure or Algorithm with detailed explanations,
-                        visual intuition, complexity analysis, examples and interview tips.
+
+                        Learn any Data Structure or
+                        Algorithm with detailed explanations,
+                        visual intuition, complexity analysis,
+                        examples and interview tips.
+
                     </p>
+
 
                 </div>
 
-                <div id="chatContainer"></div>
+
+                <!-- CHAT CONTAINER -->
+
+                <div
+                    id="chatContainer"
+                ></div>
+
 
             </div>
 
-            <!-- Input -->
+
+
+            <!-- ================================================= -->
+            <!-- INPUT BAR -->
+            <!-- ================================================= -->
 
             <footer class="input-bar">
 
+
                 <div class="input-wrapper">
 
-                    <div id="problemInput" class="editor-container"></div>
+
+                    <!-- MONACO EDITOR -->
+
+                    <div
+                        id="problemInput"
+                        class="editor-container"
+                    ></div>
+
+
+
+                    <!-- INPUT FOOTER -->
 
                     <div class="input-footer">
 
+
+                        <!-- LANGUAGE -->
+
                         <select id="language">
 
-                            <option value="cpp">C++</option>
-                            <option value="c">C</option>
-                            <option value="java">Java</option>
-                            <option value="python">Python</option>
+                            <option value="cpp">
+                                C++
+                            </option>
+
+                            <option value="c">
+                                C
+                            </option>
+
+                            <option value="java">
+                                Java
+                            </option>
+
+                            <option value="python">
+                                Python
+                            </option>
 
                         </select>
 
-                        <button id="solveBtn">
+
+
+                        <!-- SEND -->
+
+                        <button
+                            id="solveBtn"
+                        >
 
                             ➜
 
                         </button>
 
+
                     </div>
+
 
                 </div>
 
+
             </footer>
+
 
         </section>
 
+
     </main>
 
-    <!-- Marked -->
-    <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
 
-    <!-- Highlight.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
 
-    <script type="module" src="js/pages/algorithm.js"></script>
-    <!--<script type="module" src="js/pages/history.js"></script>-->
-    <script type="module" src="js/pages/historyPage.js"></script>
-    <script type="module" src="js/components/sidebar.js"></script>
-    <script type="module" src="js/utils/theme.js"></script>
-    <script type="module" src="js/auth.js"></script>
-    <script type="module" src="js/user.js"></script>
+    <!-- ================================================= -->
+    <!-- HIGHLIGHT.JS -->
+    <!-- ================================================= -->
+
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"
+    ></script>
+
+
+
+    <!-- ================================================= -->
+    <!-- PAGE SCRIPTS -->
+    <!-- ================================================= -->
+
+
+    <!-- Algorithm Tutor -->
+
+    <script
+        type="module"
+        src="js/pages/algorithm.js"
+    ></script>
+
+
+    <!-- Sidebar History -->
+
+    <script
+        type="module"
+        src="js/pages/historyPage.js"
+    ></script>
+
+
+    <!-- Sidebar Component -->
+
+    <script
+        type="module"
+        src="js/components/sidebar.js"
+    ></script>
+
+
+    <!-- Theme -->
+
+    <script
+        type="module"
+        src="js/utils/theme.js"
+    ></script>
+
+
+    <!-- Authentication -->
+
+    <script
+        type="module"
+        src="js/auth.js"
+    ></script>
+
+
+    <!-- User -->
+
+    <script
+        type="module"
+        src="js/user.js"
+    ></script>
+
+
 </body>
+
 </html>
