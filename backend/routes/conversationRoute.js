@@ -180,28 +180,3 @@ router.delete("/:id", authMiddleware, async (req, res) => {
 });
 
 export default router;
-
-
-// ================= Clear All =================
-
-router.delete("/clear", authMiddleware, async (req, res) => {
-
-    try {
-
-        await clearHistory(req.user.id);
-
-        res.json({
-            message: "History cleared successfully"
-        });
-
-    } catch (error) {
-
-        console.error(error);
-
-        res.status(500).json({
-            error: error.message
-        });
-
-    }
-
-});
