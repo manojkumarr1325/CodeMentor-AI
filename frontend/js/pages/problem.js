@@ -25,12 +25,32 @@ import {
     getConversationFromDB
 } from "../api/conversationApi.js";
 
-setStorageType("problem");
-localStorage.setItem("currentTool", "problem");
 
-const solveBtn = document.getElementById("solveBtn");
-const language = document.getElementById("language");
-const welcomeScreen = document.getElementById("welcomeScreen");
+// ==========================================
+// Storage Setup
+// ==========================================
+
+setStorageType("problem");
+
+localStorage.setItem(
+    "currentTool",
+    "problem"
+);
+
+
+// ==========================================
+// DOM Elements
+// ==========================================
+
+const solveBtn =
+    document.getElementById("solveBtn");
+
+const language =
+    document.getElementById("language");
+
+const welcomeScreen =
+    document.getElementById("welcomeScreen");
+
 
 // ==========================================
 // Initialize Monaco
@@ -38,17 +58,42 @@ const welcomeScreen = document.getElementById("welcomeScreen");
 
 initializeEditor(solveProblem);
 
+
 setTimeout(() => {
+
     updateEditorTheme();
+
 }, 200);
 
+
 setTimeout(() => {
-    setLanguage(language.value);
+
+    if (language) {
+
+        setLanguage(
+            language.value
+        );
+
+    }
+
 }, 500);
 
-language.addEventListener("change", () => {
-    setLanguage(language.value);
-});
+
+if (language) {
+
+    language.addEventListener(
+        "change",
+        () => {
+
+            setLanguage(
+                language.value
+            );
+
+        }
+    );
+
+}
+
 
 // ==========================================
 // Load Existing Conversation
@@ -57,34 +102,64 @@ language.addEventListener("change", () => {
 let firstQuery = true;
 
 const conversationId =
-    localStorage.getItem("currentConversationId");
+    localStorage.getItem(
+        "currentConversationId"
+    );
+
 
 if (conversationId) {
 
     try {
 
         const savedConversation =
-            await getConversationFromDB(conversationId);
+            await getConversationFromDB(
+                conversationId
+            );
+
 
         if (savedConversation) {
 
-            welcomeScreen.style.display = "none";
+            welcomeScreen.style.display =
+                "none";
 
             firstQuery = false;
 
-            savedConversation.messages.forEach(msg => {
 
-                if (msg.role === "user") {
+            if (
+                savedConversation.messages &&
+                Array.isArray(
+                    savedConversation.messages
+                )
+            ) {
 
-                    addUserMessage(msg.content);
+                savedConversation.messages.forEach(
+                    msg => {
 
-                } else {
+                        if (
+                            msg.role === "user"
+                        ) {
 
-                    addAIMessage(msg.content);
+                            addUserMessage(
+                                msg.content
+                            );
 
-                }
+                        }
 
-            });
+                        else if (
+                            msg.role === "assistant"
+                        ) {
+
+                            addAIMessage(
+                                msg.content
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+
 
             scrollBottom();
 
@@ -105,6 +180,7 @@ if (conversationId) {
 
 }
 
+
 // ==========================================
 // Events
 // ==========================================
@@ -118,6 +194,7 @@ if (solveBtn) {
 
 }
 
+
 // ==========================================
 // Solve Problem
 // ==========================================
@@ -127,96 +204,187 @@ async function solveProblem() {
     const problem =
         getEditorText().trim();
 
-    if (!problem) return;
+
+    if (!problem) {
+
+        return;
+
+    }
+
+
+    // ======================================
+    // First Query
+    // ======================================
 
     if (firstQuery) {
 
-        welcomeScreen.style.display = "none";
+        welcomeScreen.style.display =
+            "none";
 
         firstQuery = false;
 
     }
 
-    addUserMessage(problem);
+
+    // ======================================
+    // Show User Message
+    // ======================================
+
+    addUserMessage(
+        problem
+    );
+
 
     clearEditor();
+
 
     const thinking =
         addThinkingMessage();
 
+
     scrollBottom();
 
-    try {
 
-        let previousMessages = [];
+    // ======================================
+    // Get Previous Messages
+    // ======================================
 
-        const currentId =
-            localStorage.getItem(
-                "currentConversationId"
-            );
+    let previousMessages = [];
 
-        if (currentId) {
 
-            try {
+    const currentId =
+        localStorage.getItem(
+            "currentConversationId"
+        );
 
-                const conversation =
-                    await getConversationFromDB(
-                        currentId
-                    );
 
-                previousMessages =
-                    conversation.messages || [];
+    if (currentId) {
 
-            }
+        try {
 
-            catch (err) {
-
-                console.error(
-                    "Conversation load failed:",
-                    err
+            const conversation =
+                await getConversationFromDB(
+                    currentId
                 );
 
-            }
+
+            previousMessages =
+                conversation.messages || [];
 
         }
 
-        const response = await fetch(
-            `${CONFIG.API_BASE}/solve`,
-            {
-                method: "POST",
+        catch (err) {
 
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
+            console.error(
+                "Conversation load failed:",
+                err
+            );
 
-                body: JSON.stringify({
+            /*
+             * Do NOT stop the problem solving.
+             *
+             * If history cannot be loaded,
+             * simply continue with an empty
+             * previous message list.
+             */
 
-                    problem,
+            previousMessages = [];
 
-                    language:
-                        language.value,
+        }
 
-                    messages:
-                        previousMessages
+    }
 
-                })
 
-            }
-        );
+    // ======================================
+    // CALL AI BACKEND
+    // ======================================
 
-        const data =
+    let data;
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${CONFIG.API_BASE}/solve`,
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body: JSON.stringify({
+
+                        problem,
+
+                        language:
+                            language?.value || "cpp",
+
+                        messages:
+                            previousMessages
+
+                    })
+
+                }
+            );
+
+
+        data =
             await response.json();
+
+
+        // ==================================
+        // Check AI Response
+        // ==================================
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                data.message ||
+                "AI request failed"
+            );
+
+        }
+
+
+        if (!data.answer) {
+
+            throw new Error(
+                "No answer received from AI"
+            );
+
+        }
+
+
+        // ==================================
+        // Remove Thinking
+        // ==================================
 
         thinking.remove();
 
-        await addAIMessage(data.answer);
+
+        // ==================================
+        // Display AI Answer
+        // ==================================
+
+        await addAIMessage(
+            data.answer
+        );
+
 
         // ==================================
         // Generate Title
         // ==================================
 
-        let chatTitle = "New Chat";
+        let chatTitle =
+            "New Chat";
+
 
         try {
 
@@ -224,27 +392,38 @@ async function solveProblem() {
                 await fetch(
                     `${CONFIG.API_BASE}/title`,
                     {
+
                         method: "POST",
 
                         headers: {
+
                             "Content-Type":
                                 "application/json"
+
                         },
 
                         body: JSON.stringify({
 
-                            question: problem
+                            question:
+                                problem
 
                         })
 
                     }
                 );
 
+
             const titleData =
                 await titleRes.json();
 
-            chatTitle =
-                titleData.title || chatTitle;
+
+            if (titleRes.ok) {
+
+                chatTitle =
+                    titleData.title ||
+                    chatTitle;
+
+            }
 
         }
 
@@ -255,73 +434,157 @@ async function solveProblem() {
                 err
             );
 
+            /*
+             * Title failure should NOT
+             * affect the AI answer.
+             */
+
         }
 
+
         // ==================================
-        // Save To MongoDB
+        // SAVE TO MONGODB
         // ==================================
 
-        const saved =
-            await saveConversationToDB({
+        try {
 
-                conversationId:
-                    currentId || null,
+            const saved =
+                await saveConversationToDB({
 
-                tool: "problem",
+                    conversationId:
+                        currentId || null,
 
-                title: chatTitle,
+                    tool:
+                        "problem",
 
-                language:
-                    language.value,
+                    title:
+                        chatTitle,
 
-                messages: [
+                    language:
+                        language?.value || "cpp",
 
-                    ...previousMessages,
+                    messages: [
 
-                    {
-                        role: "user",
-                        content: problem
-                    },
+                        ...previousMessages,
 
-                    {
-                        role: "assistant",
-                        content: data.answer
-                    }
+                        {
 
-                ]
+                            role:
+                                "user",
 
-            });
+                            content:
+                                problem
 
-        if (saved && saved._id) {
+                        },
 
-            localStorage.setItem(
-                "currentConversationId",
+                        {
+
+                            role:
+                                "assistant",
+
+                            content:
+                                data.answer
+
+                        }
+
+                    ]
+
+                });
+
+
+            // ==================================
+            // Save Conversation ID
+            // ==================================
+
+            if (
+                saved &&
                 saved._id
+            ) {
+
+                localStorage.setItem(
+                    "currentConversationId",
+                    saved._id
+                );
+
+            }
+
+
+            // ==================================
+            // Refresh Sidebar
+            // ==================================
+
+            if (
+                window.refreshSidebar
+            ) {
+
+                await window.refreshSidebar();
+
+            }
+
+
+            attachCopyButtons();
+
+        }
+
+        catch (saveError) {
+
+            /*
+             * IMPORTANT:
+             *
+             * MongoDB/auth errors must NOT
+             * replace the successful AI answer.
+             */
+
+            console.error(
+                "Conversation save failed:",
+                saveError
             );
 
+            /*
+             * We intentionally do NOT show:
+             *
+             * ❌ Unable to connect to backend
+             *
+             * because the AI already answered.
+             */
+
         }
-
-        if (window.refreshSidebar) {
-
-            await window.refreshSidebar();
-
-        }
-
-        attachCopyButtons();
 
     }
+
+
+    // ======================================
+    // AI REQUEST ERROR
+    // ======================================
 
     catch (error) {
 
-        console.error(error);
+        console.error(
+            "Problem solving failed:",
+            error
+        );
 
-        thinking.remove();
 
-        addAIMessage(
-            "❌ Unable to connect to backend."
+        if (
+            thinking &&
+            thinking.parentNode
+        ) {
+
+            thinking.remove();
+
+        }
+
+
+        await addAIMessage(
+            "❌ Unable to get a response from the AI backend. Please try again."
         );
 
     }
+
+
+    // ======================================
+    // Final Scroll
+    // ======================================
 
     scrollBottom();
 
