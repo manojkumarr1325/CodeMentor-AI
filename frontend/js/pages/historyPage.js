@@ -192,146 +192,52 @@ document
     });
 
 
-// =====================================================
-// CLEAR ALL
-// =====================================================
+// ================= Clear All =================
 
-if (clearBtn) {
+clearBtn?.addEventListener("click", async () => {
 
-    clearBtn.addEventListener(
-        "click",
-        async () => {
+    if (history.length === 0) {
+        alert("There is no history to clear.");
+        return;
+    }
 
-            console.log(
-                "Clear All clicked"
-            );
-
-
-            const confirmed =
-                confirm(
-                    "Are you sure you want to delete ALL conversations?"
-                );
-
-
-            if (!confirmed) {
-
-                return;
-
-            }
-
-
-            try {
-
-                clearBtn.disabled = true;
-
-
-                const originalText =
-                    clearBtn.textContent;
-
-
-                clearBtn.textContent =
-                    "Clearing...";
-
-
-                // -----------------------------------------
-                // 1. Delete from MongoDB
-                // -----------------------------------------
-
-                await clearHistoryFromDB();
-
-
-                // -----------------------------------------
-                // 2. Clear ALL local tool storage
-                // -----------------------------------------
-
-                clearLocalHistory();
-
-
-                // -----------------------------------------
-                // 3. Remove old global key if it exists
-                // -----------------------------------------
-
-                localStorage.removeItem(
-                    "currentConversationId"
-                );
-
-
-                // -----------------------------------------
-                // 4. Reset history
-                // -----------------------------------------
-
-                history = [];
-
-
-                // -----------------------------------------
-                // 5. Reset statistics
-                // -----------------------------------------
-
-                updateStats();
-
-
-                // -----------------------------------------
-                // 6. Render empty state
-                // -----------------------------------------
-
-                applyFilters();
-
-
-                // -----------------------------------------
-                // 7. Refresh sidebar if available
-                // -----------------------------------------
-
-                if (
-                    typeof window.refreshSidebar ===
-                    "function"
-                ) {
-
-                    await window.refreshSidebar();
-
-                }
-
-
-                clearBtn.textContent =
-                    originalText;
-
-                clearBtn.disabled =
-                    false;
-
-
-                alert(
-                    "All conversations cleared successfully."
-                );
-
-            }
-
-            catch (error) {
-
-                console.error(
-                    "Clear All failed:",
-                    error
-                );
-
-
-                clearBtn.disabled =
-                    false;
-
-
-                clearBtn.textContent =
-                    "Clear All";
-
-
-                alert(
-                    "Unable to clear history.\n\n" +
-                    error.message
-                );
-
-            }
-
-        }
+    const confirmed = confirm(
+        "Are you sure you want to clear all conversations?"
     );
 
-}
+    if (!confirmed) return;
 
+    try {
+
+        clearBtn.disabled = true;
+        clearBtn.textContent = "Clearing...";
+
+        await clearHistoryFromDB();
+
+        history = [];
+
+        localStorage.removeItem("currentConversationId");
+
+        updateStats();
+
+        applyFilters();
+
+        alert("All conversations have been cleared.");
+
+    } catch (err) {
+
+        console.error("Clear history error:", err);
+
+        alert("Unable to clear history.");
+
+    } finally {
+
+        clearBtn.disabled = false;
+        clearBtn.textContent = "Clear All";
+
+    }
+
+});
 
 // =====================================================
 // APPLY FILTERS
