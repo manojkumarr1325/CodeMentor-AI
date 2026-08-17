@@ -1,30 +1,49 @@
 import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
 
+
+// =====================================================
+// CHAT CONTAINER
+// =====================================================
+
 function getChatContainer() {
 
     return document.getElementById("chatContainer");
 
 }
 
+
+// =====================================================
+// ESCAPE HTML
+// =====================================================
+
 function escapeHTML(text) {
 
-    return text
+    return String(text ?? "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;");
 
 }
 
-// ================= USER MESSAGE =================
 
-export function addUserMessage(text){
+// =====================================================
+// USER MESSAGE
+// =====================================================
 
-    const chat=document.getElementById("chatContainer");
+export function addUserMessage(text) {
 
-    const wrapper=document.createElement("div");
-    wrapper.className="message user-wrapper fade-in";
+    const chat =
+        document.getElementById("chatContainer");
 
-    wrapper.innerHTML=`
+    if (!chat) return;
+
+    const wrapper =
+        document.createElement("div");
+
+    wrapper.className =
+        "message user-wrapper fade-in";
+
+    wrapper.innerHTML = `
 
         <div class="user-message">
             ${escapeHTML(text)}
@@ -39,19 +58,28 @@ export function addUserMessage(text){
     chat.appendChild(wrapper);
 
     scrollBottom();
+
 }
 
-// ================= THINKING =================
 
-export function addThinkingMessage(){
+// =====================================================
+// THINKING MESSAGE
+// =====================================================
 
-    const chat=document.getElementById("chatContainer");
+export function addThinkingMessage() {
 
-    const wrapper=document.createElement("div");
+    const chat =
+        document.getElementById("chatContainer");
 
-    wrapper.className="message ai-wrapper fade-in";
+    if (!chat) return null;
 
-    wrapper.innerHTML=`
+    const wrapper =
+        document.createElement("div");
+
+    wrapper.className =
+        "message ai-wrapper fade-in";
+
+    wrapper.innerHTML = `
 
         <div class="avatar">
             🤖
@@ -75,17 +103,161 @@ export function addThinkingMessage(){
 
 }
 
-// ================= AI MESSAGE =================
 
-export async function addAIMessage(markdown){
+// =====================================================
+// WAIT FOR MATHJAX
+// =====================================================
 
-    const chat=document.getElementById("chatContainer");
+async function waitForMathJax() {
 
-    const wrapper=document.createElement("div");
+    // MathJax already available
+    if (
+        window.MathJax &&
+        window.MathJax.startup &&
+        window.MathJax.startup.promise
+    ) {
 
-    wrapper.className="message ai-wrapper fade-in";
+        try {
 
-    wrapper.innerHTML=`
+            await window.MathJax.startup.promise;
+
+            return true;
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "MathJax startup error:",
+                error
+            );
+
+            return false;
+
+        }
+
+    }
+
+
+    // MathJax is still loading
+    return new Promise(resolve => {
+
+        let attempts = 0;
+
+        const interval =
+            setInterval(() => {
+
+                attempts++;
+
+                if (
+                    window.MathJax &&
+                    window.MathJax.startup &&
+                    window.MathJax.startup.promise
+                ) {
+
+                    clearInterval(interval);
+
+                    window.MathJax.startup.promise
+                        .then(() => {
+
+                            resolve(true);
+
+                        })
+                        .catch(() => {
+
+                            resolve(false);
+
+                        });
+
+                }
+
+
+                // Stop waiting after 10 seconds
+                if (attempts >= 100) {
+
+                    clearInterval(interval);
+
+                    resolve(false);
+
+                }
+
+            }, 100);
+
+    });
+
+}
+
+
+// =====================================================
+// RENDER MATH
+// =====================================================
+
+async function renderMath(container) {
+
+    if (!window.MathJax) {
+
+        console.warn(
+            "MathJax is not loaded yet."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !window.MathJax.typesetPromise
+    ) {
+
+        console.warn(
+            "MathJax typesetPromise unavailable."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        await waitForMathJax();
+
+        await window.MathJax.typesetPromise([
+            container
+        ]);
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "MathJax rendering failed:",
+            error
+        );
+
+    }
+
+}
+
+
+// =====================================================
+// AI MESSAGE
+// =====================================================
+
+export async function addAIMessage(markdown) {
+
+    const chat =
+        document.getElementById("chatContainer");
+
+    if (!chat) return;
+
+    const wrapper =
+        document.createElement("div");
+
+    wrapper.className =
+        "message ai-wrapper fade-in";
+
+    wrapper.innerHTML = `
 
         <div class="avatar">
             🤖
@@ -97,185 +269,420 @@ export async function addAIMessage(markdown){
 
     chat.appendChild(wrapper);
 
-    const box=wrapper.querySelector(".ai-message");
 
-    box.innerHTML = formatResponse(markdown);
+    const box =
+        wrapper.querySelector(".ai-message");
 
-    if (window.MathJax?.typesetPromise) {
-        await MathJax.typesetPromise([box]);
-    }
 
-    // Save the original code before Highlight.js modifies it
-    box.querySelectorAll("pre code").forEach(block => {
-        block.dataset.raw = block.textContent;
-    });
+    // =================================================
+    // MARKDOWN → HTML
+    // =================================================
+
+    box.innerHTML =
+        formatResponse(markdown);
+
+
+    // =================================================
+    // MATHJAX
+    // =================================================
+
+    await renderMath(box);
+
+
+    // =================================================
+    // SAVE RAW CODE
+    // =================================================
+
+    box.querySelectorAll("pre code")
+        .forEach(block => {
+
+            block.dataset.raw =
+                block.textContent;
+
+        });
+
+
+    // =================================================
+    // HIGHLIGHT.JS
+    // =================================================
 
     if (typeof hljs !== "undefined") {
-        box.querySelectorAll("pre code").forEach(block => {
-            hljs.highlightElement(block);
-        });
+
+        box.querySelectorAll("pre code")
+            .forEach(block => {
+
+                try {
+
+                    hljs.highlightElement(
+                        block
+                    );
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "Highlight.js error:",
+                        error
+                    );
+
+                }
+
+            });
+
     }
+
+
+    // =================================================
+    // COPY BUTTONS
+    // =================================================
 
     attachCopyButtons();
 
-    if (window.hljs) {
-        document.querySelectorAll("pre code").forEach(block => {
-            hljs.highlightElement(block);
-        });
-    }
-
-    attachCopyButtons();
 
     scrollBottom();
 
 }
 
-// ================= SCROLL =================
+
+// =====================================================
+// SCROLL
+// =====================================================
 
 export function scrollBottom() {
 
-    const chatContainer = getChatContainer();
+    const chatContainer =
+        getChatContainer();
 
     if (!chatContainer) return;
 
     requestAnimationFrame(() => {
 
-        chatContainer.scrollTop = chatContainer.scrollHeight;
+        chatContainer.scrollTop =
+            chatContainer.scrollHeight;
 
     });
 
 }
 
-// ================= MARKDOWN =================
+
+// =====================================================
+// MARKDOWN FORMATTER
+// =====================================================
 
 function formatResponse(text) {
 
-    if (typeof marked === "undefined") {
-        return escapeHTML(text);
+    if (!text) {
+
+        return "";
+
     }
 
+
+    if (typeof marked === "undefined") {
+
+        return escapeHTML(text);
+
+    }
+
+
     marked.setOptions({
+
         gfm: true,
+
         breaks: false,
+
         headerIds: false,
+
         mangle: false
+
     });
 
-    text = text.replace(/\r\n/g, "\n");
 
-    // Fix language names
-    text = text.replace(/``` +/g, "```");
-    text = text.replace(/```c\+\+/gi, "```cpp");
-    text = text.replace(/```C\+\+/g, "```cpp");
-    text = text.replace(/```Python/gi, "```python");
-    text = text.replace(/```JavaScript/gi, "```javascript");
+    // Normalize line endings
+    text =
+        String(text)
+            .replace(/\r\n/g, "\n");
+
+
+    // =================================================
+    // FIX CODE BLOCK LANGUAGE
+    // =================================================
+
+    text =
+        text.replace(
+            /``` +/g,
+            "```"
+        );
+
+
+    text =
+        text.replace(
+            /```c\+\+/gi,
+            "```cpp"
+        );
+
+
+    text =
+        text.replace(
+            /```C\+\+/g,
+            "```cpp"
+        );
+
+
+    text =
+        text.replace(
+            /```Python/gi,
+            "```python"
+        );
+
+
+    text =
+        text.replace(
+            /```JavaScript/gi,
+            "```javascript"
+        );
+
 
     text = text.trim();
 
-    // ---------------------------------------
-    // Remove an OUTER markdown fence only
-    // ---------------------------------------
+
+    // =================================================
+    // REMOVE OUTER MARKDOWN FENCE
+    // =================================================
 
     const outerFence =
-        text.match(/^```(?:markdown|md)?\s*\n([\s\S]*?)\n```$/i);
+        text.match(
+            /^```(?:markdown|md)?\s*\n([\s\S]*?)\n```$/i
+        );
+
 
     if (outerFence) {
 
-        text = outerFence[1].trim();
+        text =
+            outerFence[1].trim();
 
     }
 
-    // Ensure blank line after headings
 
-    text = text.replace(
-        /^(#{1,6}\s.+)\n(?!\n)/gm,
-        "$1\n\n"
-    );
+    // =================================================
+    // HEADING SPACING
+    // =================================================
 
-    let html = marked.parse(text);
+    text =
+        text.replace(
+            /^(#{1,6}\s.+)\n(?!\n)/gm,
+            "$1\n\n"
+        );
 
-    html = html.replace(
-        /<pre><code(?: class="language-([^"]*)")?>/g,
-        (_, lang = "text") => `
+
+    // =================================================
+    // MARKDOWN → HTML
+    // =================================================
+
+    let html =
+        marked.parse(text);
+
+
+    // =================================================
+    // CODE BLOCK WRAPPER
+    // =================================================
+
+    html =
+        html.replace(
+            /<pre><code(?: class="language-([^"]*)")?>/g,
+            (_, lang = "text") => `
+
 <div class="code-block">
-<div class="code-header">
-<span class="code-language">${lang.toUpperCase()}</span>
-<button class="copy-btn">📋 Copy</button>
-</div>
-<pre><code class="language-${lang}">
-`
-    );
 
-    html = html.replace(
-        /<\/code><\/pre>/g,
-        "</code></pre></div>"
-    );
+    <div class="code-header">
+
+        <span class="code-language">
+            ${lang.toUpperCase()}
+        </span>
+
+        <button class="copy-btn">
+            📋 Copy
+        </button>
+
+    </div>
+
+    <pre><code class="language-${lang}">
+`
+        );
+
+
+    // =================================================
+    // CLOSE CODE BLOCK WRAPPER
+    // =================================================
+
+    html =
+        html.replace(
+            /<\/code><\/pre>/g,
+            "</code></pre></div>"
+        );
+
 
     return html;
 
 }
 
-// ================= TYPING EFFECT =================
 
-async function typeMarkdown(container, markdown) {
+// =====================================================
+// TYPING / RENDER EFFECT
+// =====================================================
 
-    // Wait a tiny bit so the fade looks smooth
-    await new Promise(resolve => setTimeout(resolve, 150));
+async function typeMarkdown(
+    container,
+    markdown
+) {
 
-    // Render the final formatted markdown
-    container.innerHTML = formatResponse(markdown);
+    await new Promise(resolve =>
+        setTimeout(resolve, 150)
+    );
 
-    // Highlight code blocks
+
+    container.innerHTML =
+        formatResponse(markdown);
+
+
+    // Render mathematics
+    await renderMath(container);
+
+
+    // Highlight code
     if (typeof hljs !== "undefined") {
 
-        container.querySelectorAll("pre code").forEach(block => {
+        container
+            .querySelectorAll("pre code")
+            .forEach(block => {
 
-            hljs.highlightElement(block);
+                try {
 
-        });
+                    block.dataset.raw =
+                        block.textContent;
+
+                    hljs.highlightElement(
+                        block
+                    );
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "Highlight.js error:",
+                        error
+                    );
+
+                }
+
+            });
 
     }
 
-    // Enable copy buttons
+
     attachCopyButtons();
 
-    // Fade in
-    container.classList.add("fade-in");
+
+    container.classList.add(
+        "fade-in"
+    );
 
 }
 
-// ================= COPY BUTTON =================
 
-// ================= COPY BUTTON =================
+// =====================================================
+// COPY BUTTONS
+// =====================================================
 
 export function attachCopyButtons() {
 
-    document.querySelectorAll(".copy-btn").forEach(button => {
+    document
+        .querySelectorAll(".copy-btn")
+        .forEach(button => {
 
-        button.onclick = async () => {
 
-            const codeBlock = button
-                .closest(".code-block")
-                .querySelector("code");
+            // Prevent attaching multiple handlers
+            if (
+                button.dataset.copyAttached === "true"
+            ) {
 
-            const code =
-                codeBlock.dataset.raw || codeBlock.textContent;
+                return;
 
-            await navigator.clipboard.writeText(code);
+            }
 
-            const original = button.innerHTML;
 
-            button.innerHTML = "✅ Copied";
+            button.dataset.copyAttached =
+                "true";
 
-            setTimeout(() => {
 
-                button.innerHTML = original;
+            button.addEventListener(
+                "click",
+                async event => {
 
-            }, 1500);
+                    event.stopPropagation();
 
-        };
 
-    });
+                    const codeBlock =
+                        button.closest(
+                            ".code-block"
+                        );
+
+
+                    if (!codeBlock) return;
+
+
+                    const codeElement =
+                        codeBlock.querySelector(
+                            "code"
+                        );
+
+
+                    if (!codeElement) return;
+
+
+                    const code =
+                        codeElement.dataset.raw ||
+                        codeElement.textContent;
+
+
+                    try {
+
+                        await navigator
+                            .clipboard
+                            .writeText(code);
+
+
+                        const original =
+                            button.innerHTML;
+
+
+                        button.innerHTML =
+                            "✅ Copied";
+
+
+                        setTimeout(() => {
+
+                            button.innerHTML =
+                                original;
+
+                        }, 1500);
+
+                    }
+
+                    catch (error) {
+
+                        console.error(
+                            "Copy failed:",
+                            error
+                        );
+
+                    }
+
+                }
+            );
+
+        });
 
 }
-
