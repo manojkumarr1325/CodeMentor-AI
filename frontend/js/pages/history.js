@@ -1,6 +1,7 @@
 import {
     getHistoryFromDB,
-    deleteConversationFromDB
+    deleteConversationFromDB,
+    clearHistoryFromDB
 } from "../api/conversationApi.js";
 
 import {
