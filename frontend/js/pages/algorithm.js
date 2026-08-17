@@ -159,295 +159,242 @@ if(solveBtn){
 // Solve Algorithm Query
 // ==========================================
 
-async function solveProblem(){
+async function solveProblem() {
 
+    const question = getEditorText().trim();
 
-    const question =
-        getEditorText().trim();
-
-
-
-    if(!question){
-
+    if (!question) {
         return;
-
     }
 
+    if (firstQuery) {
 
-
-    if(firstQuery){
-
-
-        welcomeScreen.style.display =
-            "none";
-
+        welcomeScreen.style.display = "none";
 
         firstQuery = false;
-
-
     }
-
-
 
     addUserMessage(question);
 
-
     clearEditor();
 
-
-
-    const thinking =
-        addThinkingMessage();
-
-
+    const thinking = addThinkingMessage();
 
     scrollBottom();
 
+    try {
+
+        // ==========================================
+        // Previous Messages
+        // ==========================================
+
+        const current = getCurrentConversation();
+
+        const currentId =
+            current?._id || null;
+
+        const previousMessages =
+            current?.messages || [];
 
 
-    try{
+        // ==========================================
+        // AI REQUEST
+        // ==========================================
+
+        const response = await fetch(
+            `${CONFIG.API_BASE}/algorithm`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    question,
+
+                    language:
+                        language?.value || "C++",
+
+                    messages:
+                        previousMessages
+
+                })
+            }
+        );
 
 
-        let previousMessages = [];
+        const data = await response.json();
 
 
+        if (!response.ok) {
 
-        const current=getCurrentConversation();
-        const currentId=current?._id || null;
-
-        let previousMessages=current?.messages || [];
-
-        const response =
-            await fetch(
-                `${CONFIG.API_BASE}/algorithm`,
-                {
-
-                    method:"POST",
-
-                    headers:{
-
-                        "Content-Type":
-                            "application/json"
-
-                    },
-
-
-                    body:JSON.stringify({
-
-                        question,
-
-                        language:
-                            language.value,
-
-
-                        messages:
-                            previousMessages
-
-                    })
-
-
-                }
+            throw new Error(
+                data.error ||
+                data.message ||
+                "Algorithm request failed"
             );
 
+        }
 
 
-        const data =
-            await response.json();
-
-
-
+        // Remove thinking animation
         thinking.remove();
 
 
+        // ==========================================
+        // DISPLAY AI ANSWER
+        // ==========================================
 
         await addAIMessage(
             data.answer
         );
 
 
+        // ==========================================
+        // TITLE GENERATION
+        // ==========================================
 
+        let chatTitle = "New Chat";
 
-
-        // ==================================
-        // Generate Title
-        // ==================================
-
-        let chatTitle =
-            "New Chat";
-
-
-
-        try{
-
+        try {
 
             const titleResponse =
                 await fetch(
                     `${CONFIG.API_BASE}/title`,
                     {
+                        method: "POST",
 
-                        method:"POST",
-
-                        headers:{
-
+                        headers: {
                             "Content-Type":
                                 "application/json"
-
                         },
 
-
-                        body:JSON.stringify({
-
+                        body: JSON.stringify({
                             question
-
                         })
-
-
                     }
                 );
 
 
+            if (titleResponse.ok) {
 
-            const titleData =
-                await titleResponse.json();
+                const titleData =
+                    await titleResponse.json();
 
+                chatTitle =
+                    titleData.title ||
+                    chatTitle;
 
-
-            chatTitle =
-                titleData.title ||
-                chatTitle;
-
-
+            }
 
         }
-
-        catch(err){
-
+        catch (titleError) {
 
             console.error(
                 "Title generation failed:",
-                err
+                titleError
             );
 
+            // Do NOT show backend error to user.
+            // Just use default title.
 
         }
 
 
+        // ==========================================
+        // SAVE CONVERSATION
+        // ==========================================
+
+        try {
+
+            const saved =
+                await saveConversationToDB({
+
+                    conversationId:
+                        currentId || null,
+
+                    tool:
+                        "algorithm",
+
+                    title:
+                        chatTitle,
+
+                    language:
+                        language?.value || "C++",
+
+                    messages: [
+
+                        ...previousMessages,
+
+                        {
+                            role: "user",
+                            content: question
+                        },
+
+                        {
+                            role: "assistant",
+                            content: data.answer
+                        }
+
+                    ]
+
+                });
 
 
+            if (saved && saved._id) {
 
-        // ==================================
-        // Save Conversation
-        // ==================================
+                localStorage.setItem(
+                    "currentConversationId",
+                    saved._id
+                );
 
-        const saved =
-            await saveConversationToDB({
-
-                conversationId:
-                    currentId || null,
+            }
 
 
-                tool:
-                    "algorithm",
+            // Refresh sidebar
+            if (window.refreshSidebar) {
 
+                await window.refreshSidebar();
 
-                title:
-                    chatTitle,
+            }
 
+        }
+        catch (saveError) {
 
-                language:
-                    language.value,
-
-
-                messages:[
-
-
-                    ...previousMessages,
-
-
-                    {
-
-                        role:"user",
-
-                        content:question
-
-                    },
-
-
-                    {
-
-                        role:"assistant",
-
-                        content:data.answer
-
-                    }
-
-
-                ]
-
-            });
-
-
-
-
-        if(saved && saved._id){
-
-
-            localStorage.setItem(
-
-                "currentConversationId",
-
-                saved._id
-
+            console.error(
+                "Conversation save failed:",
+                saveError
             );
 
+            // Answer is already displayed.
+            // Do NOT show "Unable to connect to backend."
 
         }
-
-
-
-
-        if(window.refreshSidebar){
-
-
-            await window.refreshSidebar();
-
-
-        }
-
-
 
 
         attachCopyButtons();
 
-
-
     }
+    catch (error) {
 
-
-    catch(error){
-
-
-        console.error(error);
-
+        console.error(
+            "Algorithm request failed:",
+            error
+        );
 
 
         thinking.remove();
 
 
-
-        addAIMessage(
-
+        await addAIMessage(
             "❌ Unable to connect to backend."
-
         );
-
 
     }
 
 
-
     scrollBottom();
-
-
 
 }
