@@ -25,39 +25,98 @@ import {
     setActiveChat
 } from "../utils/storage.js";
 
+
+// =====================================================
+// STORAGE
+// =====================================================
+
 setStorageType("complexity");
-localStorage.setItem("currentTool", "complexity");
 
-const solveBtn = document.getElementById("solveBtn");
-const language = document.getElementById("language");
-const welcomeScreen = document.getElementById("welcomeScreen");
+localStorage.setItem(
+    "currentTool",
+    "complexity"
+);
 
-// ================= Initialize Monaco =================
+
+// =====================================================
+// DOM
+// =====================================================
+
+const solveBtn =
+    document.getElementById("solveBtn");
+
+const language =
+    document.getElementById("language");
+
+const welcomeScreen =
+    document.getElementById("welcomeScreen");
+
+
+// =====================================================
+// FIRST QUERY
+// =====================================================
+
+let firstQuery = true;
+
+
+// =====================================================
+// INITIALIZE MONACO
+// =====================================================
 
 initializeEditor(analyzeComplexity);
+
+
+// Update theme after editor loads
 
 setTimeout(() => {
 
     updateEditorTheme();
 
-}, 200);
+}, 300);
+
+
+// Set initial language after editor loads
 
 setTimeout(() => {
 
-    setLanguage(language.value);
+    if (language) {
 
-}, 500);
+        setLanguage(
+            language.value
+        );
 
-language.addEventListener("change", () => {
+    }
 
-    setLanguage(language.value);
+}, 700);
 
-});
 
-// ================= Load Previous Conversation =================
+// =====================================================
+// LANGUAGE CHANGE
+// =====================================================
+
+if (language) {
+
+    language.addEventListener(
+        "change",
+        () => {
+
+            setLanguage(
+                language.value
+            );
+
+        }
+    );
+
+}
+
+
+// =====================================================
+// LOAD PREVIOUS CONVERSATION
+// =====================================================
 
 let savedConversation =
     getCurrentConversation();
+
 
 if (
     savedConversation &&
@@ -70,100 +129,204 @@ if (
 
 }
 
+
 if (savedConversation) {
 
-    welcomeScreen.style.display =
-        "none";
+    if (welcomeScreen) {
 
-    firstQuery = false;
-
-    if (savedConversation.messages) {
-
-        savedConversation.messages.forEach(msg => {
-
-            if (msg.role === "user") {
-
-                addUserMessage(
-                    msg.content
-                );
-
-            } else if (
-                msg.role === "assistant"
-            ) {
-
-                addAIMessage(
-                    msg.content
-                );
-
-            }
-
-        });
+        welcomeScreen.style.display =
+            "none";
 
     }
 
+    firstQuery = false;
+
+
+    if (savedConversation.messages) {
+
+        savedConversation.messages.forEach(
+            msg => {
+
+                if (
+                    msg.role === "user"
+                ) {
+
+                    addUserMessage(
+                        msg.content
+                    );
+
+                }
+
+                else if (
+                    msg.role === "assistant"
+                ) {
+
+                    addAIMessage(
+                        msg.content
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+    scrollBottom();
+
 }
 
-// ================= Button =================
 
-solveBtn.addEventListener("click", analyzeComplexity);
+// =====================================================
+// SOLVE BUTTON
+// =====================================================
 
-// ================= Analyze =================
+if (solveBtn) {
+
+    solveBtn.addEventListener(
+        "click",
+        analyzeComplexity
+    );
+
+}
+
+
+// =====================================================
+// ANALYZE COMPLEXITY
+// =====================================================
 
 async function analyzeComplexity() {
 
-    const code = getEditorText().trim();
+    const code =
+        getEditorText().trim();
 
-    if (!code) return;
+
+    // Nothing entered
+    if (!code) {
+
+        return;
+
+    }
+
+
+    // =================================================
+    // HIDE WELCOME
+    // =================================================
 
     if (firstQuery) {
 
-        welcomeScreen.style.display = "none";
+        if (welcomeScreen) {
+
+            welcomeScreen.style.display =
+                "none";
+
+        }
 
         firstQuery = false;
 
     }
 
+
+    // =================================================
+    // SHOW USER MESSAGE
+    // =================================================
+
     addUserMessage(code);
 
+
+    // Clear Monaco
     clearEditor();
 
-    const thinking = addThinkingMessage();
+
+    // =================================================
+    // THINKING
+    // =================================================
+
+    const thinking =
+        addThinkingMessage();
+
 
     scrollBottom();
 
+
     try {
 
-        const response = await fetch(
+        // =================================================
+        // BACKEND REQUEST
+        // =================================================
 
-            `${CONFIG.API_BASE}/complexity`,
+        const response =
+            await fetch(
+                `${CONFIG.API_BASE}/complexity`,
+                {
 
-            {
+                    method: "POST",
 
-                method: "POST",
+                    headers: {
 
-                headers: {
+                        "Content-Type":
+                            "application/json"
 
-                    "Content-Type": "application/json"
+                    },
 
-                },
+                    body: JSON.stringify({
 
-                body: JSON.stringify({
+                        code: code,
 
-                    code: code,
-                    language: language.value,
-                    messages: []
+                        language:
+                            language
+                                ? language.value
+                                : "cpp",
 
-                })
+                        messages: []
 
-            }
+                    })
 
+                }
+            );
+
+
+        // =================================================
+        // CHECK HTTP STATUS
+        // =================================================
+
+        if (!response.ok) {
+
+            throw new Error(
+                `Server error: ${response.status}`
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        // =================================================
+        // REMOVE THINKING
+        // =================================================
+
+        if (thinking) {
+
+            thinking.remove();
+
+        }
+
+
+        // =================================================
+        // SHOW AI RESPONSE
+        // =================================================
+
+        await addAIMessage(
+            data.answer ||
+            "No response received from the server."
         );
 
-        const data = await response.json();
 
-        thinking.remove();
-
-        await addAIMessage(data.answer);
+        // =================================================
+        // SAVE LOCAL HISTORY
+        // =================================================
 
         saveConversation(
 
@@ -171,7 +334,9 @@ async function analyzeComplexity() {
 
             data.answer,
 
-            language.value,
+            language
+                ? language.value
+                : "cpp",
 
             "Complexity Analysis",
 
@@ -179,33 +344,70 @@ async function analyzeComplexity() {
 
         );
 
-        const history = getHistory();
 
-        if (history.length > 0) {
+        // =================================================
+        // UPDATE ACTIVE CHAT
+        // =================================================
 
-            setActiveChat(history[0].id);
+        const history =
+            getHistory();
+
+
+        if (
+            history &&
+            history.length > 0
+        ) {
+
+            setActiveChat(
+                history[0].id
+            );
 
         }
 
-        if (window.refreshSidebar) {
 
-            window.refreshSidebar();
+        // =================================================
+        // REFRESH SIDEBAR
+        // =================================================
+
+        if (
+            window.refreshSidebar
+        ) {
+
+            await window.refreshSidebar();
 
         }
+
+
+        // =================================================
+        // COPY BUTTONS
+        // =================================================
 
         attachCopyButtons();
 
     }
 
+
     catch (err) {
 
-        thinking.remove();
+        console.error(
+            "Complexity Analyzer Error:",
+            err
+        );
 
-        await addAIMessage("❌ Unable to connect to backend.");
 
-        console.error(err);
+        if (thinking) {
+
+            thinking.remove();
+
+        }
+
+
+        await addAIMessage(
+            "❌ Unable to connect to backend."
+        );
 
     }
+
 
     scrollBottom();
 
