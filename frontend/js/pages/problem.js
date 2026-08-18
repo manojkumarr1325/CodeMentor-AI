@@ -17,7 +17,11 @@ import {
 } from "../components/workspace.js";
 
 import {
-    setStorageType
+    setStorageType,
+    getCurrentConversation,
+    setCurrentConversation,
+    clearCurrentConversation,
+    setActiveChat
 } from "../utils/storage.js";
 
 import {
@@ -27,7 +31,7 @@ import {
 
 
 // ==========================================
-// Storage Setup
+// STORAGE
 // ==========================================
 
 setStorageType("problem");
@@ -39,7 +43,7 @@ localStorage.setItem(
 
 
 // ==========================================
-// DOM Elements
+// DOM
 // ==========================================
 
 const solveBtn =
@@ -53,7 +57,7 @@ const welcomeScreen =
 
 
 // ==========================================
-// Initialize Monaco
+// INITIALIZE EDITOR
 // ==========================================
 
 initializeEditor(solveProblem);
@@ -96,93 +100,89 @@ if (language) {
 
 
 // ==========================================
-// Load Existing Conversation
+// LOAD CURRENT CONVERSATION
 // ==========================================
 
 let firstQuery = true;
 
-const conversationId =
-    localStorage.getItem(
-        "currentConversationId"
-    );
+let savedConversation =
+    getCurrentConversation();
 
 
-if (conversationId) {
+/*
+ * Make sure the conversation belongs
+ * to the Problem Solver.
+ */
 
-    try {
+if (
+    savedConversation &&
+    savedConversation.tool !== "problem"
+) {
 
-        const savedConversation =
-            await getConversationFromDB(
-                conversationId
-            );
+    clearCurrentConversation();
 
+    savedConversation = null;
 
-        if (savedConversation) {
-
-            welcomeScreen.style.display =
-                "none";
-
-            firstQuery = false;
+}
 
 
-            if (
-                savedConversation.messages &&
-                Array.isArray(
-                    savedConversation.messages
-                )
-            ) {
+/*
+ * Display saved conversation
+ */
 
-                savedConversation.messages.forEach(
-                    msg => {
+if (savedConversation) {
 
-                        if (
-                            msg.role === "user"
-                        ) {
+    welcomeScreen.style.display =
+        "none";
 
-                            addUserMessage(
-                                msg.content
-                            );
+    firstQuery = false;
 
-                        }
 
-                        else if (
-                            msg.role === "assistant"
-                        ) {
+    if (
+        savedConversation.messages &&
+        Array.isArray(
+            savedConversation.messages
+        )
+    ) {
 
-                            addAIMessage(
-                                msg.content
-                            );
+        savedConversation.messages.forEach(
+            msg => {
 
-                        }
+                if (
+                    msg.role === "user"
+                ) {
 
-                    }
-                );
+                    addUserMessage(
+                        msg.content
+                    );
+
+                }
+
+                else if (
+                    msg.role === "assistant"
+                ) {
+
+                    addAIMessage(
+                        msg.content
+                    );
+
+                }
 
             }
-
-
-            scrollBottom();
-
-            attachCopyButtons();
-
-        }
-
-    }
-
-    catch (err) {
-
-        console.error(
-            "Failed to load conversation:",
-            err
         );
 
     }
+
+
+    scrollBottom();
+
+    attachCopyButtons();
 
 }
 
 
 // ==========================================
-// Events
+// EVENTS
 // ==========================================
 
 if (solveBtn) {
@@ -196,7 +196,7 @@ if (solveBtn) {
 
 
 // ==========================================
-// Solve Problem
+// SOLVE PROBLEM
 // ==========================================
 
 async function solveProblem() {
@@ -213,7 +213,7 @@ async function solveProblem() {
 
 
     // ======================================
-    // First Query
+    // FIRST QUERY
     // ======================================
 
     if (firstQuery) {
@@ -227,7 +227,7 @@ async function solveProblem() {
 
 
     // ======================================
-    // Show User Message
+    // USER MESSAGE
     // ======================================
 
     addUserMessage(
@@ -246,17 +246,24 @@ async function solveProblem() {
 
 
     // ======================================
-    // Get Previous Messages
+    // GET CURRENT CONVERSATION
     // ======================================
 
-    let previousMessages = [];
+    const current =
+        getCurrentConversation();
 
 
     const currentId =
-        localStorage.getItem(
-            "currentConversationId"
-        );
+        current?._id || null;
 
+
+    let previousMessages =
+        current?.messages || [];
+
+
+    // ======================================
+    // GET LATEST VERSION FROM DATABASE
+    // ======================================
 
     if (currentId) {
 
@@ -268,8 +275,12 @@ async function solveProblem() {
                 );
 
 
-            previousMessages =
-                conversation.messages || [];
+            if (conversation) {
+
+                previousMessages =
+                    conversation.messages || [];
+
+            }
 
         }
 
@@ -281,14 +292,9 @@ async function solveProblem() {
             );
 
             /*
-             * Do NOT stop the problem solving.
-             *
-             * If history cannot be loaded,
-             * simply continue with an empty
-             * previous message list.
+             * Continue solving even if
+             * previous history cannot load.
              */
-
-            previousMessages = [];
 
         }
 
@@ -296,7 +302,7 @@ async function solveProblem() {
 
 
     // ======================================
-    // CALL AI BACKEND
+    // CALL AI
     // ======================================
 
     let data;
@@ -338,10 +344,6 @@ async function solveProblem() {
             await response.json();
 
 
-        // ==================================
-        // Check AI Response
-        // ==================================
-
         if (!response.ok) {
 
             throw new Error(
@@ -356,21 +358,21 @@ async function solveProblem() {
         if (!data.answer) {
 
             throw new Error(
-                "No answer received from AI"
+                "No answer received"
             );
 
         }
 
 
         // ==================================
-        // Remove Thinking
+        // REMOVE THINKING
         // ==================================
 
         thinking.remove();
 
 
         // ==================================
-        // Display AI Answer
+        // SHOW AI ANSWER
         // ==================================
 
         await addAIMessage(
@@ -379,16 +381,17 @@ async function solveProblem() {
 
 
         // ==================================
-        // Generate Title
+        // GENERATE TITLE
         // ==================================
 
         let chatTitle =
+            current?.title ||
             "New Chat";
 
 
         try {
 
-            const titleRes =
+            const titleResponse =
                 await fetch(
                     `${CONFIG.API_BASE}/title`,
                     {
@@ -414,10 +417,10 @@ async function solveProblem() {
 
 
             const titleData =
-                await titleRes.json();
+                await titleResponse.json();
 
 
-            if (titleRes.ok) {
+            if (titleResponse.ok) {
 
                 chatTitle =
                     titleData.title ||
@@ -434,17 +437,45 @@ async function solveProblem() {
                 err
             );
 
-            /*
-             * Title failure should NOT
-             * affect the AI answer.
-             */
-
         }
 
 
         // ==================================
-        // SAVE TO MONGODB
+        // SAVE CONVERSATION
         // ==================================
+
+        const updatedMessages = [
+
+            ...previousMessages,
+
+            {
+
+                role: "user",
+
+                content:
+                    problem
+
+            },
+
+            {
+
+                role: "assistant",
+
+                content:
+                    data.answer
+
+            }
+
+        ];
+
+
+        /*
+         * Save to MongoDB.
+         *
+         * This is separated from the AI
+         * request so a save/token error
+         * does not produce a fake AI error.
+         */
 
         try {
 
@@ -452,7 +483,7 @@ async function solveProblem() {
                 await saveConversationToDB({
 
                     conversationId:
-                        currentId || null,
+                        currentId,
 
                     tool:
                         "problem",
@@ -463,54 +494,74 @@ async function solveProblem() {
                     language:
                         language?.value || "cpp",
 
-                    messages: [
-
-                        ...previousMessages,
-
-                        {
-
-                            role:
-                                "user",
-
-                            content:
-                                problem
-
-                        },
-
-                        {
-
-                            role:
-                                "assistant",
-
-                            content:
-                                data.answer
-
-                        }
-
-                    ]
+                    messages:
+                        updatedMessages
 
                 });
 
 
             // ==================================
-            // Save Conversation ID
+            // UPDATE LOCAL CURRENT CONVERSATION
             // ==================================
+
+            const localConversation = {
+
+                id:
+                    saved?.id ||
+                    saved?._id ||
+                    current?.id ||
+                    Date.now(),
+
+                _id:
+                    saved?._id ||
+                    current?._id ||
+                    null,
+
+                title:
+                    chatTitle,
+
+                question:
+                    problem,
+
+                answer:
+                    data.answer,
+
+                language:
+                    language?.value || "cpp",
+
+                tool:
+                    "problem",
+
+                createdAt:
+                    saved?.createdAt ||
+                    current?.createdAt ||
+                    new Date().toISOString(),
+
+                messages:
+                    updatedMessages
+
+            };
+
+
+            setCurrentConversation(
+                localConversation
+            );
+
 
             if (
                 saved &&
                 saved._id
             ) {
 
-                localStorage.setItem(
-                    "currentConversationId",
-                    saved._id
+                setActiveChat(
+                    localConversation.id
                 );
 
             }
 
 
             // ==================================
-            // Refresh Sidebar
+            // REFRESH SIDEBAR
             // ==================================
 
             if (
@@ -522,8 +573,6 @@ async function solveProblem() {
             }
 
 
-            attachCopyButtons();
-
         }
 
         catch (saveError) {
@@ -531,8 +580,11 @@ async function solveProblem() {
             /*
              * IMPORTANT:
              *
-             * MongoDB/auth errors must NOT
-             * replace the successful AI answer.
+             * If MongoDB returns 401,
+             * DO NOT show an AI error.
+             *
+             * The AI answer is already
+             * successfully displayed.
              */
 
             console.error(
@@ -540,21 +592,16 @@ async function solveProblem() {
                 saveError
             );
 
-            /*
-             * We intentionally do NOT show:
-             *
-             * ❌ Unable to connect to backend
-             *
-             * because the AI already answered.
-             */
-
         }
+
+
+        attachCopyButtons();
 
     }
 
 
     // ======================================
-    // AI REQUEST ERROR
+    // AI ERROR
     // ======================================
 
     catch (error) {
@@ -581,10 +628,6 @@ async function solveProblem() {
 
     }
 
-
-    // ======================================
-    // Final Scroll
-    // ======================================
 
     scrollBottom();
 
