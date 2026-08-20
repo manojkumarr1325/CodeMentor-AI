@@ -14,6 +14,7 @@ router.post("/", async (req, res) => {
 
         const answer = await algorithmService(
             question,
+            language,
             messages || []
         );
 
