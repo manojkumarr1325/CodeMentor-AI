@@ -3,6 +3,7 @@ import { algorithmPrompt } from "../prompts/algorithmPrompt.js";
 
 export async function algorithmService(
     question,
+    language = "cpp",
     messages = []
 ) {
 
@@ -11,7 +12,7 @@ export async function algorithmService(
         {
             role: "system",
             content:
-            "You are CodeMentor AI. Teach algorithms like an experienced university professor. Always respond in GitHub Markdown."
+                "You are CodeMentor AI. Teach algorithms like an experienced university professor. Always respond in GitHub Markdown."
         },
 
         ...messages.map(msg => ({
@@ -21,11 +22,10 @@ export async function algorithmService(
 
         {
             role: "user",
-            content: algorithmPrompt(question)
+            content: algorithmPrompt(question, language)
         }
 
     ];
-
 
     return await callAI(aiMessages);
 
