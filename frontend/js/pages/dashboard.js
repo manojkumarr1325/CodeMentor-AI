@@ -1,148 +1,494 @@
 import {
-    getAllHistory,
+    getHistoryFromDB,
+    getConversationFromDB
+} from "../api/conversationApi.js";
+
+import {
     setCurrentConversation,
     setStorageType
 } from "../utils/storage.js";
 
-/* ==========================================
-   Load All Conversations
-========================================== */
 
-const history = getAllHistory();
+// ==========================================
+// DOM ELEMENTS
+// ==========================================
 
-/* ==========================================
-   Statistics
-========================================== */
+const totalChats =
+    document.getElementById("totalChats");
 
-document.getElementById("totalChats").textContent = history.length;
+const cppCount =
+    document.getElementById("cppCount");
 
-document.getElementById("cppCount").textContent =
-    history.filter(chat => chat.language === "C++").length;
+const cCount =
+    document.getElementById("cCount");
 
-document.getElementById("cCount").textContent =
-    history.filter(chat => chat.language === "C").length;
+const javaCount =
+    document.getElementById("javaCount");
 
-document.getElementById("javaCount").textContent =
-    history.filter(chat => chat.language === "Java").length;
+const pythonCount =
+    document.getElementById("pythonCount");
 
-document.getElementById("pythonCount").textContent =
-    history.filter(chat => chat.language === "Python").length;
+const jsCount =
+    document.getElementById("jsCount");
 
-const jsElement = document.getElementById("jsCount");
+const container =
+    document.getElementById("recentActivity");
 
-if (jsElement) {
-    jsElement.textContent =
-        history.filter(chat => chat.language === "JavaScript").length;
+
+// ==========================================
+// LOAD DASHBOARD
+// ==========================================
+
+async function loadDashboard() {
+
+    try {
+
+        const history =
+            await getHistoryFromDB();
+
+        console.log(
+            "Dashboard history:",
+            history
+        );
+
+        updateStatistics(history);
+
+        loadRecentActivity(history);
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Unable to load dashboard:",
+            error
+        );
+
+        showEmptyStatistics();
+
+        showEmptyActivity();
+
+    }
+
 }
 
-/* ==========================================
-   Recent Activity
-========================================== */
 
-const container = document.getElementById("recentActivity");
+// ==========================================
+// STATISTICS
+// ==========================================
 
-function loadRecentActivity() {
+function updateStatistics(history) {
+
+    if (totalChats) {
+
+        totalChats.textContent =
+            history.length;
+
+    }
+
+
+    if (cppCount) {
+
+        cppCount.textContent =
+            history.filter(chat =>
+                normalizeLanguage(
+                    chat.language
+                ) === "cpp"
+            ).length;
+
+    }
+
+
+    if (cCount) {
+
+        cCount.textContent =
+            history.filter(chat =>
+                normalizeLanguage(
+                    chat.language
+                ) === "c"
+            ).length;
+
+    }
+
+
+    if (javaCount) {
+
+        javaCount.textContent =
+            history.filter(chat =>
+                normalizeLanguage(
+                    chat.language
+                ) === "java"
+            ).length;
+
+    }
+
+
+    if (pythonCount) {
+
+        pythonCount.textContent =
+            history.filter(chat =>
+                normalizeLanguage(
+                    chat.language
+                ) === "python"
+            ).length;
+
+    }
+
+
+    if (jsCount) {
+
+        jsCount.textContent =
+            history.filter(chat =>
+                normalizeLanguage(
+                    chat.language
+                ) === "javascript"
+            ).length;
+
+    }
+
+}
+
+
+// ==========================================
+// NORMALIZE LANGUAGE
+// ==========================================
+
+function normalizeLanguage(language) {
+
+    const value =
+        String(language || "")
+            .trim()
+            .toLowerCase();
+
+
+    const languageMap = {
+
+        "c++": "cpp",
+
+        "cpp": "cpp",
+
+        "c": "c",
+
+        "java": "java",
+
+        "python": "python",
+
+        "javascript": "javascript",
+
+        "js": "javascript"
+
+    };
+
+
+    return languageMap[value] ||
+        value;
+
+}
+
+
+// ==========================================
+// RECENT ACTIVITY
+// ==========================================
+
+function loadRecentActivity(history) {
 
     if (!container) return;
 
-    if (history.length === 0) {
 
-        container.innerHTML = `
-            <div class="activity-empty">
-                No activity yet.
-            </div>
-        `;
+    if (!history || history.length === 0) {
+
+        showEmptyActivity();
 
         return;
+
     }
+
 
     container.innerHTML = "";
 
-    const recentChats = [...history]
-        .sort((a, b) => b.id - a.id)
-        .slice(0, 5);
+
+    // ==========================================
+    // SORT BY MOST RECENT
+    // ==========================================
+
+    const recentChats =
+        [...history]
+            .sort((a, b) => {
+
+                const dateA =
+                    new Date(
+                        a.updatedAt ||
+                        a.createdAt ||
+                        0
+                    ).getTime();
+
+
+                const dateB =
+                    new Date(
+                        b.updatedAt ||
+                        b.createdAt ||
+                        0
+                    ).getTime();
+
+
+                return dateB - dateA;
+
+            })
+            .slice(0, 5);
+
+
+    // ==========================================
+    // CREATE ACTIVITY CARDS
+    // ==========================================
 
     recentChats.forEach(chat => {
 
-        const tool = chat.tool || "problem";
+        const tool =
+            chat.tool || "problem";
+
 
         const iconMap = {
+
             problem: "📝",
+
             debug: "🐞",
+
             complexity: "📊",
+
             testcase: "🧪",
+
             algorithm: "📚"
+
         };
 
-        const toolName =
-            tool.charAt(0).toUpperCase() + tool.slice(1);
 
-        const icon = iconMap[tool] || "💬";
+        const toolNameMap = {
+
+            problem: "Problem Solver",
+
+            debug: "Debugger",
+
+            complexity:
+                "Complexity Analyzer",
+
+            testcase:
+                "Test Case Generator",
+
+            algorithm:
+                "Algorithm Tutor"
+
+        };
+
+
+        const icon =
+            iconMap[tool] || "💬";
+
+
+        const toolName =
+            toolNameMap[tool] ||
+            "CodeMentor AI";
+
 
         const title =
             chat.title ||
-            chat.question?.substring(0, 70) ||
+            chat.messages?.[0]?.content
+                ?.substring(0, 70) ||
             "Untitled Conversation";
 
-        const language = chat.language || "Unknown";
 
-        const date = chat.createdAt || "";
+        const language =
+            formatLanguage(
+                chat.language
+            );
 
-        const card = document.createElement("div");
 
-        card.className = "activity-card";
+        const date =
+            formatDate(
+                chat.updatedAt ||
+                chat.createdAt
+            );
+
+
+        const card =
+            document.createElement("div");
+
+
+        card.className =
+            "activity-card";
+
 
         card.innerHTML = `
+
             <div class="activity-language">
-                ${icon} ${toolName}
+
+                ${icon} ${escapeHTML(toolName)}
+
             </div>
+
 
             <div class="activity-title">
-                ${title}
+
+                ${escapeHTML(title)}
+
             </div>
+
 
             <div class="activity-meta">
-                ${language}
+
+                ${escapeHTML(language)}
+
             </div>
+
 
             <div class="activity-date">
-                ${date}
+
+                ${escapeHTML(date)}
+
             </div>
+
         `;
 
-        card.addEventListener("click", () => {
 
-            setStorageType(tool);
+        // ======================================
+        // OPEN CONVERSATION
+        // ======================================
 
-            setCurrentConversation(chat);
+        card.addEventListener(
+            "click",
+            async () => {
 
-            switch (tool) {
+                try {
 
-                case "problem":
-                    window.location.href = "problem.html";
-                    break;
+                    setStorageType(tool);
 
-                case "debug":
-                    window.location.href = "debugger.html";
-                    break;
 
-                case "complexity":
-                    window.location.href = "complexity.html";
-                    break;
+                    /*
+                     * Store the MongoDB
+                     * conversation in the
+                     * correct tool storage.
+                     */
 
-                case "testcase":
-                    window.location.href = "testcase.html";
-                    break;
+                    const conversation = {
 
-                case "algorithm":
-                    window.location.href = "algorithm.html";
-                    break;
+                        id:
+                            chat.id ||
+                            chat._id,
 
-                default:
-                    window.location.href = "problem.html";
+                        _id:
+                            chat._id,
+
+                        title:
+                            chat.title ||
+                            "New Chat",
+
+                        tool:
+
+                            tool,
+
+                        language:
+
+                            chat.language || "",
+
+                        messages:
+
+                            chat.messages || [],
+
+                        createdAt:
+
+                            chat.createdAt
+
+                    };
+
+
+                    setCurrentConversation(
+                        conversation
+                    );
+
+
+                    /*
+                     * Also save MongoDB ID.
+                     */
+
+                    if (chat._id) {
+
+                        localStorage.setItem(
+
+                            "currentConversationId",
+
+                            chat._id
+
+                        );
+
+                    }
+
+
+                    switch (tool) {
+
+                        case "problem":
+
+                            window.location.href =
+                                "problem.html";
+
+                            break;
+
+
+                        case "debug":
+
+                            window.location.href =
+                                "debugger.html";
+
+                            break;
+
+
+                        case "complexity":
+
+                            window.location.href =
+                                "complexity.html";
+
+                            break;
+
+
+                        case "testcase":
+
+                            window.location.href =
+                                "testcase.html";
+
+                            break;
+
+
+                        case "algorithm":
+
+                            window.location.href =
+                                "algorithm.html";
+
+                            break;
+
+
+                        default:
+
+                            window.location.href =
+                                "problem.html";
+
+                    }
+
+                }
+
+                catch (error) {
+
+                    console.error(
+
+                        "Unable to open conversation:",
+
+                        error
+
+                    );
+
+                }
+
             }
 
-        });
+        );
+
 
         container.appendChild(card);
 
@@ -150,4 +496,164 @@ function loadRecentActivity() {
 
 }
 
-loadRecentActivity();
+
+// ==========================================
+// FORMAT LANGUAGE
+// ==========================================
+
+function formatLanguage(language) {
+
+    const map = {
+
+        cpp: "C++",
+
+        "c++": "C++",
+
+        c: "C",
+
+        java: "Java",
+
+        python: "Python",
+
+        javascript: "JavaScript",
+
+        js: "JavaScript"
+
+    };
+
+
+    return map[
+        String(language || "")
+            .toLowerCase()
+    ] || language || "Unknown";
+
+}
+
+
+// ==========================================
+// FORMAT DATE
+// ==========================================
+
+function formatDate(date) {
+
+    if (!date) {
+
+        return "";
+
+    }
+
+
+    const parsedDate =
+        new Date(date);
+
+
+    if (isNaN(parsedDate)) {
+
+        return "";
+
+    }
+
+
+    return parsedDate.toLocaleString();
+
+}
+
+
+// ==========================================
+// ESCAPE HTML
+// ==========================================
+
+function escapeHTML(value) {
+
+    return String(value ?? "")
+
+        .replace(/&/g, "&amp;")
+
+        .replace(/</g, "&lt;")
+
+        .replace(/>/g, "&gt;")
+
+        .replace(/"/g, "&quot;")
+
+        .replace(/'/g, "&#039;");
+
+}
+
+
+// ==========================================
+// EMPTY STATISTICS
+// ==========================================
+
+function showEmptyStatistics() {
+
+    if (totalChats) {
+
+        totalChats.textContent = "0";
+
+    }
+
+
+    if (cppCount) {
+
+        cppCount.textContent = "0";
+
+    }
+
+
+    if (cCount) {
+
+        cCount.textContent = "0";
+
+    }
+
+
+    if (javaCount) {
+
+        javaCount.textContent = "0";
+
+    }
+
+
+    if (pythonCount) {
+
+        pythonCount.textContent = "0";
+
+    }
+
+
+    if (jsCount) {
+
+        jsCount.textContent = "0";
+
+    }
+
+}
+
+
+// ==========================================
+// EMPTY ACTIVITY
+// ==========================================
+
+function showEmptyActivity() {
+
+    if (!container) return;
+
+
+    container.innerHTML = `
+
+        <div class="activity-empty">
+
+            No activity yet.
+
+        </div>
+
+    `;
+
+}
+
+
+// ==========================================
+// START
+// ==========================================
+
+loadDashboard();
