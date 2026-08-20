@@ -10,7 +10,7 @@ router.post("/", async (req, res) => {
 
     try {
 
-        const { question, messages } = req.body;
+        const { question,language, messages } = req.body;
 
         const answer = await algorithmService(
             question,
