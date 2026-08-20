@@ -1,6 +1,5 @@
 import {
-    getHistoryFromDB,
-    getConversationFromDB
+    getHistoryFromDB
 } from "../api/conversationApi.js";
 
 import {
