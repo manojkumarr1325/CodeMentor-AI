@@ -1,6 +1,17 @@
-export function algorithmPrompt(question) {
+export function algorithmPrompt(question, language = "cpp") {
 
-return `
+    const languageMap = {
+        cpp: "C++",
+        c: "C",
+        java: "Java",
+        python: "Python",
+        javascript: "JavaScript"
+    };
+
+    const selectedLanguage =
+        languageMap[language] || "C++";
+
+    return `
 
 You are CodeMentor AI.
 
@@ -22,7 +33,11 @@ The answer should always contain:
 
 # Dry Run
 
-# Code in C++
+# Code in ${selectedLanguage}
+
+IMPORTANT:
+When providing code, use ONLY ${selectedLanguage}.
+Do not provide C++ code unless ${selectedLanguage} is C++.
 
 # Common Mistakes
 
